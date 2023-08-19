@@ -1,3 +1,5 @@
+import Lexer.Lexer;
+
 public class MainProgram {
 
     public static void main(String[] args) {
