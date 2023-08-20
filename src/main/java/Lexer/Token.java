@@ -11,6 +11,6 @@ public class Token {
 
     @Override
     public String toString() {
-        return "Lexer.Token{" + "value='" + value + '\'' + ", type=" + type + '}';
+        return "Lexer.Token{" + "value='" + this.value + '\'' + ", type=" + this.type + '}';
     }
 }
