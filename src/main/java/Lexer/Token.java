@@ -9,8 +9,8 @@ public class Token {
         this.value = pValue;
     }
 
-    @Override
+   @Override
     public String toString() {
-        return "Lexer.Token{" + "value='" + this.value + '\'' + ", type=" + this.type + '}';
+        return "Token {" + "type=" + this.type + ", value='" + this.value + '\'' + '}';
     }
 }

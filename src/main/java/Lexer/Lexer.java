@@ -20,15 +20,15 @@ public abstract class Lexer {
         while (!src.isEmpty()) {
             // handle single-charakter Tokens
             if (Objects.equals(src.get(0), "=")){
-                tokenList.add(new Token(TokenType.EQUAL, src.remove(0)));
+                tokenList.add(new Token(TokenType.ASSIGN, src.remove(0)));
             }
             else if (Objects.equals(src.get(0), "-") || Objects.equals(src.get(0), "+") ||
                     Objects.equals(src.get(0), "*") || Objects.equals(src.get(0), "/"))
                 tokenList.add(new Token(TokenType.BINARY, src.remove(0)));
             else if (Objects.equals(src.get(0), "("))
-                tokenList.add(new Token(TokenType.OPENPAR, src.remove(0)));
+                tokenList.add(new Token(TokenType.LPAREN, src.remove(0)));
             else if (Objects.equals(src.get(0), ")"))
-                tokenList.add(new Token(TokenType.CLOSEDPAR, src.remove(0)));
+                tokenList.add(new Token(TokenType.RPAREN, src.remove(0)));
             // handle multi-charakter Tokens
             else {
                 // handle NumberToken
@@ -37,7 +37,7 @@ public abstract class Lexer {
                     while (!src.isEmpty() && isDigit(src.get(0))) {
                         numValue.append(src.remove(0));
                     }
-                    tokenList.add(new Token(TokenType.NUMBER, numValue.toString()));
+                    tokenList.add(new Token(TokenType.INT, numValue.toString()));
                 }
                 // handle IdentifierToken
                 else if (isAlpha(src.get(0))) {
@@ -45,7 +45,7 @@ public abstract class Lexer {
                     while (!src.isEmpty() && isAlpha(src.get(0))) {
                         idnValue.append(src.remove(0));
                     }
-                    tokenList.add(new Token(identifierMap.getOrDefault(idnValue.toString(), TokenType.IDENTIFIER),
+                    tokenList.add(new Token(identifierMap.getOrDefault(idnValue.toString(), TokenType.IDENT),
                             idnValue.toString()));
                 }
                 else src.remove(0);

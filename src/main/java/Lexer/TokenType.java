@@ -1,5 +1,18 @@
 package Lexer;
 
 public enum TokenType {
-    NUMBER, IDENTIFIER, EQUAL, OPENPAR, CLOSEDPAR, BINARY, LET
+    // Literals & Identifiers
+    INT, IDENT,
+    //Operators
+    ASSIGN, BINARY,
+    // Delimiters
+    LPAREN,
+    RPAREN,
+    LBRACE,
+    RBRACE,
+    COMMA, SEMICOL,
+    //Keywords
+    LET, FUNC,
+    // Special
+    ILLEGAL, EOF
 }
