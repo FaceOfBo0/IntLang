@@ -1,16 +1,12 @@
-package Lexer;
+package Scanner;
 
 public enum TokenType {
     // Literals & Identifiers
     INT, IDENT,
     //Operators
-    ASSIGN, BINARY,
+    ASSIGN, EQUAL, BINARY,
     // Delimiters
-    LPAREN,
-    RPAREN,
-    LBRACE,
-    RBRACE,
-    COMMA, SEMICOL,
+    LPAREN, RPAREN, LBRACE, RBRACE, COMMA, SEMICOL,
     //Keywords
     LET, FUNC,
     // Special
