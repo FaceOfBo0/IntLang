@@ -9,6 +9,10 @@ public class Token {
         this.value = pValue;
     }
 
+    Token(TokenType pType) {
+        this(pType, "");
+    }
+
    @Override
     public String toString() {
         return "Scanner.Token {" + this.type+", " + this.value + "}";
