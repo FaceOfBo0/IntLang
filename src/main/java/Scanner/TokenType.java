@@ -5,16 +5,12 @@ public enum TokenType {
     INT, IDENT,
     //Operators
     ASSIGN,
-    EQUAL,
-    TILDE,
+    EQUAL, TILDE,
     PLUS, MINUS, ASTERISK, SLASH,
     // Delimiters
-    LPAREN,
-    RPAREN,
-    LBRACE,
-    RBRACE,
-    COMMA,
-    SEMICOL,
+    LPAREN, RPAREN,
+    LBRACE, RBRACE,
+    COMMA, SEMICOL,
     //Keywords
     LET, FUNC,
     // Special
