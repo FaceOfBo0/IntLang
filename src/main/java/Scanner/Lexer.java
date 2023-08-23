@@ -1,6 +1,5 @@
 package Scanner;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Lexer {
