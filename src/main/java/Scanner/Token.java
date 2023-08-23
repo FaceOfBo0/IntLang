@@ -15,6 +15,6 @@ public class Token {
 
    @Override
     public String toString() {
-        return "Scanner.Token {" + this.type+", " + this.value + "}";
+        return "Token {" + this.type + ", " + this.value + "}";
     }
 }

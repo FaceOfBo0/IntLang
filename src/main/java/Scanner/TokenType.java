@@ -4,9 +4,17 @@ public enum TokenType {
     // Literals & Identifiers
     INT, IDENT,
     //Operators
-    ASSIGN, EQUAL, BINARY,
+    ASSIGN,
+    EQUAL,
+    TILDE,
+    PLUS, MINUS, ASTERISK, SLASH,
     // Delimiters
-    LPAREN, RPAREN, LBRACE, RBRACE, COMMA, SEMICOL,
+    LPAREN,
+    RPAREN,
+    LBRACE,
+    RBRACE,
+    COMMA,
+    SEMICOL,
     //Keywords
     LET, FUNC,
     // Special
