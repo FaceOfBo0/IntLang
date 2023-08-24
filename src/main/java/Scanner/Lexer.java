@@ -106,5 +106,4 @@ public class Lexer {
         return this.tokens;
     }
 
-
 }
