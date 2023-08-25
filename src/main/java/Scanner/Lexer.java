@@ -3,7 +3,8 @@ package Scanner;
 import java.util.*;
 
 public class Lexer {
-    private final Map<String, TokenType> keywords = new HashMap<>(Map.of("let", TokenType.LET,"fn",TokenType.FUNC));
+    private final Map<String, TokenType> keywords = new HashMap<>(Map.of("let", TokenType.LET, "fn",TokenType.FUNC,"true",TokenType.TRUE,
+            "false",TokenType.FALSE,"return",TokenType.RETURN,"if",TokenType.IF,"else",TokenType.ELSE));
     public  List<Token> tokens = new ArrayList<>(0);
     public String source;
     public char curChar;
@@ -21,13 +22,19 @@ public class Lexer {
         }
     }
 
-    private void readChar () {
+    private void readChar() {
         if (this.readPos >= this.source.length())
             this.curChar = 0;
         else
             this.curChar = this.source.charAt(this.readPos);
         this.curPos = this.readPos;
         this.readPos++;
+    }
+
+    private char peekChar() {
+        if (this.readPos >= this.source.length())
+            return 0;
+        else return this.source.charAt(this.readPos);
     }
 
     private String readIdent() {
@@ -63,11 +70,18 @@ public class Lexer {
         this.skipWhitespaces();
         switch (this.curChar) {
             case '=' -> {
-                if (this.source.charAt(this.readPos) == '=') {
+                if (this.peekChar() == '=') {
                     this.readChar();
-                    tok = new Token(TokenType.EQUAL, "==");
+                    tok = new Token(TokenType.EQ, "==");
                 }
                 else tok = new Token(TokenType.ASSIGN, String.valueOf(this.curChar));
+            }
+            case '!' -> {
+                if (this.peekChar() == '=') {
+                    this.readChar();
+                    tok = new Token(TokenType.NEQ, "!=");
+                }
+                else tok = new Token(TokenType.BANG, String.valueOf(this.curChar));
             }
             case ';' -> tok = new Token(TokenType.SEMICOL, String.valueOf(this.curChar));
             case ',' -> tok = new Token(TokenType.COMMA, String.valueOf(this.curChar));
@@ -80,6 +94,8 @@ public class Lexer {
             case '*' -> tok = new Token(TokenType.ASTERISK, String.valueOf(this.curChar));
             case '/' -> tok = new Token(TokenType.SLASH, String.valueOf(this.curChar));
             case '~' -> tok = new Token(TokenType.TILDE, String.valueOf(this.curChar));
+            case '<' -> tok = new Token(TokenType.LESS, String.valueOf(this.curChar));
+            case '>' -> tok = new Token(TokenType.GREATER, String.valueOf(this.curChar));
             case 0 -> tok = new Token(TokenType.EOF);
             default -> {
                 String ident;
@@ -92,7 +108,7 @@ public class Lexer {
                     num = this.readInt();
                     return new Token(TokenType.INT, num);
                 }
-                else tok = new Token(TokenType.ILLEGAL);
+                else tok = new Token(TokenType.ILLEGAL, String.valueOf(this.curChar));
             }
         }
         this.readChar();
@@ -100,8 +116,10 @@ public class Lexer {
     }
 
     public List<Token> tokenize() {
-        while (this.curPos <= this.source.length()) {
-            tokens.add(this.nextToken());
+        Token tok = new Token(TokenType.ILLEGAL);
+        while (!(tok.type == TokenType.EOF)) {
+            tok = this.nextToken();
+            tokens.add(tok);
         }
         return this.tokens;
     }
