@@ -17,7 +17,7 @@ public class Lexer {
     }
 
     private void skipWhitespaces() {
-        while (this.curChar == '\n' || this.curChar == '\t' || this.curChar == ' ') {
+        while (this.curChar == '\n' || this.curChar == '\t' || this.curChar == '\r' || this.curChar == ' ') {
             this.readChar();
         }
     }

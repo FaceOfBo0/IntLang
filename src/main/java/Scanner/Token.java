@@ -1,8 +1,8 @@
 package Scanner;
 
 public class Token {
-    final String value;
-    final TokenType type;
+    String value = null;
+    TokenType type;
 
     Token(TokenType pType, String pValue) {
         this.type = pType;
@@ -10,7 +10,7 @@ public class Token {
     }
 
     Token(TokenType pType) {
-        this(pType, "");
+        this.type = pType;
     }
 
    @Override
