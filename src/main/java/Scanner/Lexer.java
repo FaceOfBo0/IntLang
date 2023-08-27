@@ -1,10 +1,12 @@
 package Scanner;
 
+import Token.*;
+
 import java.util.*;
 
 public class Lexer {
-    private final Map<String, TokenType> keywords = new HashMap<>(Map.of("let", TokenType.LET, "fn",TokenType.FUNC,"true",TokenType.TRUE,
-            "false",TokenType.FALSE,"return",TokenType.RETURN,"if",TokenType.IF,"else",TokenType.ELSE));
+    private final Map<String, TokenType> keywords = new HashMap<>(Map.of("let", TokenType.LET, "fn", TokenType.FUNC, "true", TokenType.TRUE,
+            "false", TokenType.FALSE, "return", TokenType.RETURN, "if", TokenType.IF, "else", TokenType.ELSE));
     public  List<Token> tokens = new ArrayList<>(0);
     public String source;
     public char curChar;
@@ -72,37 +74,42 @@ public class Lexer {
             case '=' -> {
                 if (this.peekChar() == '=') {
                     this.readChar();
-                    tok = new Token(TokenType.EQ, "==");
+                    tok = new Token(TokenType.EQ);
                 }
-                else tok = new Token(TokenType.ASSIGN, String.valueOf(this.curChar));
+                else tok = new Token(TokenType.ASSIGN);
             }
             case '!' -> {
                 if (this.peekChar() == '=') {
                     this.readChar();
-                    tok = new Token(TokenType.NEQ, "!=");
+                    tok = new Token(TokenType.BANG_EQ);
                 }
-                else tok = new Token(TokenType.BANG, String.valueOf(this.curChar));
+                else tok = new Token(TokenType.BANG);
             }
-            case ';' -> tok = new Token(TokenType.SEMICOL, String.valueOf(this.curChar));
-            case ',' -> tok = new Token(TokenType.COMMA, String.valueOf(this.curChar));
-            case '(' -> tok = new Token(TokenType.LPAREN, String.valueOf(this.curChar));
-            case ')' -> tok = new Token(TokenType.RPAREN, String.valueOf(this.curChar));
-            case '{' -> tok = new Token(TokenType.LBRACE, String.valueOf(this.curChar));
-            case '}' -> tok = new Token(TokenType.RBRACE, String.valueOf(this.curChar));
-            case '+' -> tok = new Token(TokenType.PLUS, String.valueOf(this.curChar));
-            case '-' -> tok = new Token(TokenType.MINUS, String.valueOf(this.curChar));
-            case '*' -> tok = new Token(TokenType.ASTERISK, String.valueOf(this.curChar));
-            case '/' -> tok = new Token(TokenType.SLASH, String.valueOf(this.curChar));
-            case '~' -> tok = new Token(TokenType.TILDE, String.valueOf(this.curChar));
-            case '<' -> tok = new Token(TokenType.LESS, String.valueOf(this.curChar));
-            case '>' -> tok = new Token(TokenType.GREATER, String.valueOf(this.curChar));
+            case '<' -> tok = new Token(TokenType.LESS);
+            case '>' -> tok = new Token(TokenType.GREATER);
+            case ';' -> tok = new Token(TokenType.SEMICOL);
+            case ',' -> tok = new Token(TokenType.COMMA);
+            case '(' -> tok = new Token(TokenType.LPAREN);
+            case ')' -> tok = new Token(TokenType.RPAREN);
+            case '{' -> tok = new Token(TokenType.LBRACE);
+            case '}' -> tok = new Token(TokenType.RBRACE);
+            case '+' -> tok = new Token(TokenType.PLUS);
+            case '-' -> tok = new Token(TokenType.MINUS);
+            case '*' -> tok = new Token(TokenType.ASTERISK);
+            case '/' -> tok = new Token(TokenType.SLASH);
+            case '~' -> tok = new Token(TokenType.TILDE);
+
             case 0 -> tok = new Token(TokenType.EOF);
             default -> {
                 String ident;
                 String num;
                 if (isAlpha(this.curChar)) {
                     ident = this.readIdent();
-                    return new Token(this.lookupIdent(ident), ident);
+                    TokenType lookup = this.lookupIdent(ident);
+                    if (lookup == TokenType.IDENT)
+                        return new Token(lookup, ident);
+                    else
+                        return new Token(lookup);
                 }
                 else if (isDigit(this.curChar)) {
                     num = this.readInt();

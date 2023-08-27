@@ -1,5 +1,5 @@
 import Scanner.Lexer;
-import Scanner.Token;
+import Token.Token;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -7,6 +7,8 @@ import java.nio.file.*;
 import java.util.*;
 
 public class Karaoke {
+
+//    static boolean hadError = false;
 
     public static void main(String[] args) throws IOException {
         if (args.length > 1) {
@@ -42,4 +44,13 @@ public class Karaoke {
             System.out.println(token);
         }
     }
+
+//    static void error(int line, String msg) {
+//        report(line, "", msg);
+//    }
+//
+//    private static void report(int line, String where, String msg) {
+//        System.err.println("[line "+ line +"] Error" + where +": " + msg);
+//        hadError = true;
+//    }
 }

@@ -1,16 +1,15 @@
-package Scanner;
+package Token;
 
 public enum TokenType {
     // Literals & Identifiers
-    INT, IDENT,
+    INT, IDENT, STRING,
     //Operators
     ASSIGN,
-    BANG, EQ, NEQ, TILDE, LESS, GREATER,
-    PLUS, MINUS, ASTERISK, SLASH,
+    BANG, EQ, BANG_EQ, TILDE, LESS, GREATER,
+    PLUS, MINUS, ASTERISK, SLASH, LESS_EQ, GREATER_EQ,
     // Delimiters
-    LPAREN, RPAREN,
-    LBRACE, RBRACE,
-    COMMA, SEMICOL,
+    LPAREN, RPAREN, LBRACE,
+    RBRACE, COMMA, SEMICOL,
     //Keywords
     LET, FUNC, IF, ELSE, RETURN, TRUE, FALSE,
     // Special
