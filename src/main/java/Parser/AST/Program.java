@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Program implements Node {
 
-    List<Statement> statements = new ArrayList<>(0);
+    public List<Statement> statements = new ArrayList<>(0);
 
     @Override
     public String tokenLiteral() {

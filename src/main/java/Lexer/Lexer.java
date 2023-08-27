@@ -1,4 +1,4 @@
-package Scanner;
+package Lexer;
 
 import Token.*;
 
@@ -67,7 +67,7 @@ public class Lexer {
         return ('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z') || ch == '_';
     }
 
-    private Token nextToken () {
+    public Token nextToken () {
         Token tok;
         this.skipWhitespaces();
         switch (this.curChar) {

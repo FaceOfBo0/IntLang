@@ -1,4 +1,4 @@
-import Scanner.Lexer;
+import Lexer.Lexer;
 import Token.Token;
 
 import java.io.*;
