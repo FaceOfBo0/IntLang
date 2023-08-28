@@ -41,7 +41,7 @@ public class Lexer {
 
     private String readIdent() {
         int pos = this.curPos;
-        while (this.isAlpha(this.curChar)) {
+        while (this.isAlpha(this.curChar) || (this.isAlphaNumeric(this.curChar) && this.curPos > pos)) {
             this.readChar();
         }
         return this.source.substring(pos, this.curPos);
@@ -66,6 +66,8 @@ public class Lexer {
     private boolean isAlpha(char ch) {
         return ('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z') || ch == '_';
     }
+
+    private boolean isAlphaNumeric(char ch) { return isAlpha(ch) || isDigit(ch); }
 
     public Token nextToken () {
         Token tok;
