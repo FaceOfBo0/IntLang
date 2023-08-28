@@ -48,8 +48,59 @@ public class Parser {
         return null;
     }
 
+    private boolean peekIsNot(TokenType pType) {
+        if (this.peekToken.type == pType) {
+            this.nextToken();
+            return false;
+        }
+        else return true;
+    }
+
     private Statement parseLetStatement() {
+        LetStatement stmt = new LetStatement(this.curToken);
+
+        if (this.peekIsNot(TokenType.IDENT)) {
+            System.out.println("Error: incorrect identifier");
+            return null;
+        }
+
+        stmt.setName(parseIdentifier());
+
+
+        if (this.peekIsNot(TokenType.ASSIGN)) {
+            System.out.println("Error: incorrect assign operator");
+            return null;
+        }
+        this.nextToken();
+
+        // Expression value = parseExpression();
+        while (!(this.curToken.type == TokenType.SEMICOL)) {
+            this.nextToken();
+        }
+
+        return stmt;
+    }
+
+    private Expression parseExpression() {
+        if (this.curToken.type == TokenType.INT) {
+            if (this.peekToken.type == TokenType.PLUS) {
+                return parseOperatorExp();
+            } else if (this.peekToken.type == TokenType.SEMICOL) {
+                return parseInt();
+            }
+        }
         return null;
     }
 
+    private Expression parseInt() {
+        return null;
+    }
+
+    private Expression parseOperatorExp() {
+        return null;
+    }
+
+    private Identifier parseIdentifier(){
+        return new Identifier(this.curToken, this.curToken.literal);
+    }
 }

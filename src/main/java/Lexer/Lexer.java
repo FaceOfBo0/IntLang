@@ -74,32 +74,32 @@ public class Lexer {
             case '=' -> {
                 if (this.peekChar() == '=') {
                     this.readChar();
-                    tok = new Token(TokenType.EQ);
+                    tok = new Token(TokenType.EQ,"==");
                 }
-                else tok = new Token(TokenType.ASSIGN);
+                else tok = new Token(TokenType.ASSIGN, String.valueOf(this.curChar));
             }
             case '!' -> {
                 if (this.peekChar() == '=') {
                     this.readChar();
-                    tok = new Token(TokenType.BANG_EQ);
+                    tok = new Token(TokenType.BANG_EQ, "!=");
                 }
-                else tok = new Token(TokenType.BANG);
+                else tok = new Token(TokenType.BANG, String.valueOf(this.curChar));
             }
-            case '<' -> tok = new Token(TokenType.LESS);
-            case '>' -> tok = new Token(TokenType.GREATER);
-            case ';' -> tok = new Token(TokenType.SEMICOL);
-            case ',' -> tok = new Token(TokenType.COMMA);
-            case '(' -> tok = new Token(TokenType.LPAREN);
-            case ')' -> tok = new Token(TokenType.RPAREN);
-            case '{' -> tok = new Token(TokenType.LBRACE);
-            case '}' -> tok = new Token(TokenType.RBRACE);
-            case '+' -> tok = new Token(TokenType.PLUS);
-            case '-' -> tok = new Token(TokenType.MINUS);
-            case '*' -> tok = new Token(TokenType.ASTERISK);
-            case '/' -> tok = new Token(TokenType.SLASH);
-            case '~' -> tok = new Token(TokenType.TILDE);
+            case '<' -> tok = new Token(TokenType.LESS, String.valueOf(this.curChar));
+            case '>' -> tok = new Token(TokenType.GREATER, String.valueOf(this.curChar));
+            case ';' -> tok = new Token(TokenType.SEMICOL, String.valueOf(this.curChar));
+            case ',' -> tok = new Token(TokenType.COMMA, String.valueOf(this.curChar));
+            case '(' -> tok = new Token(TokenType.LPAREN, String.valueOf(this.curChar));
+            case ')' -> tok = new Token(TokenType.RPAREN, String.valueOf(this.curChar));
+            case '{' -> tok = new Token(TokenType.LBRACE, String.valueOf(this.curChar));
+            case '}' -> tok = new Token(TokenType.RBRACE, String.valueOf(this.curChar));
+            case '+' -> tok = new Token(TokenType.PLUS, String.valueOf(this.curChar));
+            case '-' -> tok = new Token(TokenType.MINUS, String.valueOf(this.curChar));
+            case '*' -> tok = new Token(TokenType.ASTERISK, String.valueOf(this.curChar));
+            case '/' -> tok = new Token(TokenType.SLASH, String.valueOf(this.curChar));
+            case '~' -> tok = new Token(TokenType.TILDE, String.valueOf(this.curChar));
 
-            case 0 -> tok = new Token(TokenType.EOF);
+            case 0 -> tok = new Token(TokenType.EOF, "null");
             default -> {
                 String ident;
                 String num;
@@ -109,7 +109,7 @@ public class Lexer {
                     if (lookup == TokenType.IDENT)
                         return new Token(lookup, ident);
                     else
-                        return new Token(lookup);
+                        return new Token(lookup, lookup.toString());
                 }
                 else if (isDigit(this.curChar)) {
                     num = this.readInt();

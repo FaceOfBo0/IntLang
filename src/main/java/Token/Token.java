@@ -22,6 +22,6 @@ public class Token {
         if (Objects.equals(this.literal, ""))
             return "Token {"+this.type+"}";
         else
-            return "Token {" + this.type + ", '" + this.literal + "'}";
+            return "Token:{" + this.type + ", '" + this.literal + "'}";
     }
 }
