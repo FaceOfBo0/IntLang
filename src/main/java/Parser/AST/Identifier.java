@@ -2,12 +2,12 @@ package Parser.AST;
 import Token.*;
 public class Identifier implements Expression {
 
-    public Token tok = null;
+    public Token tok;
     public String value;
 
-    public Identifier(Token pTok, String pValue){
+    public Identifier(Token pTok){
         this.tok = pTok;
-        this.value = pValue;
+        this.value = this.tok.literal;
     }
 
     @Override
@@ -18,8 +18,8 @@ public class Identifier implements Expression {
         return value;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setValue(String pValue) {
+        this.value = pValue;
     }
 
     @Override
@@ -27,7 +27,11 @@ public class Identifier implements Expression {
         return this.tok.literal;
     }
 
+    @Override
     public String toString() {
-        return "Identifier:{" + this.value + "}";
+        return "Identifier{" +
+                "tok=" + tok.type +
+                ", value='" + value + '\'' +
+                '}';
     }
 }

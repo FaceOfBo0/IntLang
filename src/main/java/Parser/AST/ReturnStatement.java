@@ -2,7 +2,7 @@ package Parser.AST;
 
 import Token.*;
 
-public class ReturnStatement implements Statement{
+public class ReturnStatement implements Statement {
     Token tok;
     Expression value;
 
@@ -25,4 +25,12 @@ public class ReturnStatement implements Statement{
 
     @Override
     public void statementNode() {}
+
+    @Override
+    public String toString() {
+        return "ReturnStatement:{" +
+                "tok=" + tok.type +
+                ", value=" + value +
+                '}';
+    }
 }

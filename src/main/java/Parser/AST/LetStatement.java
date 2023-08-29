@@ -2,9 +2,15 @@ package Parser.AST;
 import Token.*;
 
 public class LetStatement implements Statement {
-    private Expression value;
-    private Identifier name;
     private final Token tok;
+    private Identifier name;
+    private Expression value;
+
+
+
+    public LetStatement(Token pToken) {
+        this.tok = pToken;
+    }
 
     public void setName(Identifier pIdent) {
         this.name = pIdent;
@@ -18,13 +24,8 @@ public class LetStatement implements Statement {
         return this.value;
     }
 
-    public Identifier getName() {
-        return this.name;
-    }
+    public Identifier getName() { return this.name; }
 
-    public LetStatement(Token pToken) {
-        this.tok = pToken;
-    }
     @Override
     public String tokenLiteral() {
         return this.tok.literal;
@@ -36,6 +37,10 @@ public class LetStatement implements Statement {
 
     @Override
     public String toString() {
-        return "LetStatement:{"+this.tokenLiteral()+", "+this.name +", "+ this.value + "}";
+        return "LetStatement{" +
+                "tok=" + tok.type +
+                ", name=" + name +
+                ", value=" + value +
+                '}';
     }
 }

@@ -19,9 +19,6 @@ public class Token {
 
    @Override
     public String toString() {
-        if (Objects.equals(this.literal, ""))
-            return "Token {"+this.type+"}";
-        else
-            return "Token:{" + this.type + ", '" + this.literal + "'}";
+        return "Token:{" + this.type + ", '" + this.literal + "'}";
     }
 }

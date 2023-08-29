@@ -93,7 +93,7 @@ public class Parser {
     }
 
     private Identifier parseIdent(){
-        return new Identifier(curToken, curToken.literal);
+        return new Identifier(curToken);
     }
 
     public void nextToken() {
