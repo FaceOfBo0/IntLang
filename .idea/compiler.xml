@@ -9,5 +9,8 @@
         <module name="Karaoke" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="IntLangJava" target="17" />
+    </bytecodeTargetLevel>
   </component>
 </project>

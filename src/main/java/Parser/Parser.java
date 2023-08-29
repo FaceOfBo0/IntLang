@@ -9,30 +9,25 @@ public class Parser {
     Token peekToken;
 
     public Parser(Lexer pLex) {
-        this.lex = pLex;
-        this.nextToken();
-        this.nextToken();
-    }
-
-    public void nextToken() {
-        this.curToken = this.peekToken;
-        this.peekToken = this.lex.nextToken();
+        lex = pLex;
+        nextToken();
+        nextToken();
     }
 
     public Program parseProgram() {
         Program program = new Program();
         Statement statement;
-        while (this.curToken.type != TokenType.EOF) {
-            statement = this.parseStatement();
+        while (curToken.type != TokenType.EOF) {
+            statement = parseStatement();
             if (statement != null)
                 program.statements.add(statement);
-            this.nextToken();
+            nextToken();
         }
         return program;
     }
 
     private Statement parseStatement(){
-        switch (this.curToken.type){
+        switch (curToken.type){
             case LET -> { return parseLetStatement(); }
             case RETURN -> { return parseReturnStatement(); }
             case IF -> { return parseIfStatement(); }
@@ -48,46 +43,37 @@ public class Parser {
         return null;
     }
 
-    private boolean peekIsNot(TokenType pType) {
-        if (this.peekToken.type == pType) {
-            this.nextToken();
-            return false;
-        }
-        else return true;
-    }
-
     private Statement parseLetStatement() {
-        LetStatement stmt = new LetStatement(this.curToken);
+        LetStatement stmt = new LetStatement(curToken);
 
-        if (this.peekIsNot(TokenType.IDENT)) {
-            System.out.println("Error: incorrect identifier");
+        if (expectedPeekNot(TokenType.IDENT)) {
+            System.out.println("Syntax Error: incorrect identifier");
             return null;
         }
 
         stmt.setName(parseIdentifier());
 
 
-        if (this.peekIsNot(TokenType.ASSIGN)) {
-            System.out.println("Error: incorrect assign operator");
+        if (expectedPeekNot(TokenType.ASSIGN)) {
+            System.out.println("Syntax Error: incorrect assign operator");
             return null;
         }
-        this.nextToken();
+        nextToken();
 
         // Expression value = parseExpression();
-        while (!(this.curToken.type == TokenType.SEMICOL)) {
-            this.nextToken();
+        while (!curTokenIs(TokenType.SEMICOL)) {
+            nextToken();
         }
 
         return stmt;
     }
 
     private Expression parseExpression() {
-        if (this.curToken.type == TokenType.INT) {
-            if (this.peekToken.type == TokenType.PLUS) {
+        if (curTokenIs(TokenType.INT)) {
+            if (peekTokenIs(TokenType.PLUS))
                 return parseOperatorExp();
-            } else if (this.peekToken.type == TokenType.SEMICOL) {
+            else if (peekToken.type == TokenType.SEMICOL)
                 return parseInt();
-            }
         }
         return null;
     }
@@ -101,6 +87,27 @@ public class Parser {
     }
 
     private Identifier parseIdentifier(){
-        return new Identifier(this.curToken, this.curToken.literal);
+        return new Identifier(curToken, curToken.literal);
+    }
+
+    public void nextToken() {
+        curToken = peekToken;
+        peekToken = lex.nextToken();
+    }
+
+    private boolean expectedPeekNot(TokenType pType) {
+        if (peekToken.type == pType) {
+            nextToken();
+            return false;
+        }
+        else return true;
+    }
+
+    private boolean peekTokenIs(TokenType pType) {
+        return peekToken.type == pType;
+    }
+
+    private boolean curTokenIs(TokenType pType) {
+        return curToken.type == pType;
     }
 }
