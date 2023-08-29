@@ -14,6 +14,14 @@ public class Identifier implements Expression {
     public void expressionNode() {
     }
 
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
     @Override
     public String tokenLiteral() {
         return this.tok.literal;

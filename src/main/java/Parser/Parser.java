@@ -3,10 +3,14 @@ import Parser.AST.*;
 import Token.*;
 import Lexer.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Parser {
     Lexer lex;
     Token curToken;
     Token peekToken;
+    List<String> errors = new ArrayList<>(0);
 
     public Parser(Lexer pLex) {
         lex = pLex;
@@ -30,32 +34,24 @@ public class Parser {
         switch (curToken.type){
             case LET -> { return parseLetStatement(); }
             case RETURN -> { return parseReturnStatement(); }
-            case IF -> { return parseIfStatement(); }
+            // case IF -> { return parseIfStatement(); }
             default -> { return null; }
         }
-    }
-
-    private Statement parseIfStatement() {
-        return null;
-    }
-
-    private Statement parseReturnStatement() {
-        return null;
     }
 
     private Statement parseLetStatement() {
         LetStatement stmt = new LetStatement(curToken);
 
         if (expectedPeekNot(TokenType.IDENT)) {
-            System.out.println("Syntax Error: incorrect identifier");
+            System.out.println("Parser Error: " + errors.get(errors.size()-1));
             return null;
         }
 
-        stmt.setName(parseIdentifier());
+        stmt.setName(parseIdent());
 
 
         if (expectedPeekNot(TokenType.ASSIGN)) {
-            System.out.println("Syntax Error: incorrect assign operator");
+            System.out.println("Parser Error: " + errors.get(errors.size()-1));
             return null;
         }
         nextToken();
@@ -78,6 +74,16 @@ public class Parser {
         return null;
     }
 
+    private Statement parseReturnStatement() {
+        ReturnStatement stmt = new ReturnStatement(curToken);
+
+        return stmt;
+    }
+
+    private Statement parseIfStatement() {
+        return null;
+    }
+
     private Expression parseInt() {
         return null;
     }
@@ -86,7 +92,7 @@ public class Parser {
         return null;
     }
 
-    private Identifier parseIdentifier(){
+    private Identifier parseIdent(){
         return new Identifier(curToken, curToken.literal);
     }
 
@@ -100,7 +106,10 @@ public class Parser {
             nextToken();
             return false;
         }
-        else return true;
+        else {
+            peekError(pType);
+            return true;
+        }
     }
 
     private boolean peekTokenIs(TokenType pType) {
@@ -110,4 +119,10 @@ public class Parser {
     private boolean curTokenIs(TokenType pType) {
         return curToken.type == pType;
     }
+
+    private void peekError(TokenType pType) {
+        errors.add("Expected next Token to be "+ pType +", got "+ peekToken.type +" instead!");
+    }
+
+    public List<String> getErrors(){ return errors; }
 }
