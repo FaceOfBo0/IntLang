@@ -1,5 +1,7 @@
-package Parser.AST;
+package Parser.AST.Statements;
 
+import Parser.AST.Expression;
+import Parser.AST.Statement;
 import Token.*;
 
 public class ReturnStatement implements Statement {
@@ -28,9 +30,6 @@ public class ReturnStatement implements Statement {
 
     @Override
     public String toString() {
-        return "ReturnStatement:{" +
-                "tok=" + tok.type +
-                ", value=" + value +
-                '}';
+        return "ReturnStatement:{" + tok.type + ", " + value + '}';
     }
 }

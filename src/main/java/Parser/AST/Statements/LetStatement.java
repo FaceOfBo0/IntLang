@@ -1,4 +1,7 @@
-package Parser.AST;
+package Parser.AST.Statements;
+import Parser.AST.Expression;
+import Parser.AST.Expressions.Identifier;
+import Parser.AST.Statement;
 import Token.*;
 
 public class LetStatement implements Statement {
@@ -37,10 +40,6 @@ public class LetStatement implements Statement {
 
     @Override
     public String toString() {
-        return "LetStatement{" +
-                "tok=" + tok.type +
-                ", name=" + name +
-                ", value=" + value +
-                '}';
+        return "LetStatement:{" + tok.type + ", " + name + ", " + value + "}";
     }
 }

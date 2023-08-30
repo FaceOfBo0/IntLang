@@ -1,4 +1,5 @@
-package Parser.AST;
+package Parser.AST.Expressions;
+import Parser.AST.Expression;
 import Token.*;
 public class Identifier implements Expression {
 
@@ -29,9 +30,6 @@ public class Identifier implements Expression {
 
     @Override
     public String toString() {
-        return "Identifier{" +
-                "tok=" + tok.type +
-                ", value='" + value + '\'' +
-                '}';
+        return "Identifier:{" + tok.type + ", '" + value + "'}";
     }
 }
