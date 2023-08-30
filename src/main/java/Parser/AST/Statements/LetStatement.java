@@ -9,10 +9,9 @@ public class LetStatement implements Statement {
     private Identifier name;
     private Expression value;
 
-
-
     public LetStatement(Token pToken) {
         this.tok = pToken;
+        this.value = null;
     }
 
     public void setName(Identifier pIdent) {
@@ -23,23 +22,16 @@ public class LetStatement implements Statement {
         this.value = pValue;
     }
 
-    public Expression getValue() {
-        return this.value;
-    }
-
-    public Identifier getName() { return this.name; }
-
     @Override
     public String tokenLiteral() {
         return this.tok.literal;
     }
 
     @Override
-    public void statementNode() {
-    }
+    public void statementNode() {}
 
     @Override
     public String toString() {
-        return "LetStatement:{" + tok.type + ", " + name + ", " + value + "}";
+        return this.tokenLiteral() + " " + name + " = " + value + ";";
     }
 }

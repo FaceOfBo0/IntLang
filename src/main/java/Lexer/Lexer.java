@@ -111,7 +111,7 @@ public class Lexer {
                     if (lookup == TokenType.IDENT)
                         return new Token(lookup, ident);
                     else
-                        return new Token(lookup, lookup.toString());
+                        return new Token(lookup, lookup.toString().toLowerCase());
                 }
                 else if (isDigit(this.curChar)) {
                     num = this.readInt();

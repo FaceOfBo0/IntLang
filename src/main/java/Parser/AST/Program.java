@@ -14,4 +14,11 @@ public class Program implements Node {
         else
             return "";
     }
+
+    @Override
+    public String toString() {
+        StringBuilder out = new StringBuilder();
+        this.statements.forEach(elem -> out.append(elem).append("\n"));
+        return out.toString();
+    }
 }

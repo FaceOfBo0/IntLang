@@ -40,12 +40,8 @@ public class Karaoke {
 
     private static void run(String source) {
         Lexer scanner = new Lexer(source);
-//        List<Token> tokens = scanner.tokenize();
-//        for (Token token : tokens) {
-//            System.out.println(token);
-//        }
         Parser par = new Parser(scanner);
-        par.parseProgram().statements.forEach(System.out::println);
+        System.out.println(par.parseProgram());
     }
 
 //    static void error(int line, String msg) {

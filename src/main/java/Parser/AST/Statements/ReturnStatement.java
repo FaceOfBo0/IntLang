@@ -9,15 +9,12 @@ public class ReturnStatement implements Statement {
     Expression value;
 
     public ReturnStatement(Token pToken){
-        tok = pToken;
+        this.tok = pToken;
+        this.value = null;
     }
 
     public void setValue(Expression pValue) {
         this.value = pValue;
-    }
-
-    public Expression getValue() {
-        return this.value;
     }
 
     @Override
@@ -30,6 +27,6 @@ public class ReturnStatement implements Statement {
 
     @Override
     public String toString() {
-        return "ReturnStatement:{" + tok.type + ", " + value + '}';
+        return this.tokenLiteral() + " " + this.value + ";";
     }
 }
