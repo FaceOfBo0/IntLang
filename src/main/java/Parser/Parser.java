@@ -36,6 +36,12 @@ public class Parser {
     List<String> errors = new ArrayList<>(0);
     Map<TokenType, PrefixParseFn> prefixParseMap = new HashMap<>(0);
     Map<TokenType, InfixParseFn> infixParseMap = new HashMap<>(0);
+    Map<TokenType, Operator> precedences = new HashMap<>(Map.of(TokenType.EQ, Operator.EQUALS,
+            TokenType.BANG_EQ, Operator.EQUALS, TokenType.GREATER, Operator.LESSGREATER,
+            TokenType.GREATER_EQ, Operator.LESSGREATER, TokenType.LESS, Operator.LESSGREATER,
+            TokenType.LESS_EQ, Operator.LESSGREATER, TokenType.PLUS, Operator.SUM,
+            TokenType.MINUS, Operator.SUM, TokenType.ASTERISK, Operator.PRODUCT,
+            TokenType.SLASH, Operator.PRODUCT));
 
     public Parser(Lexer pLex) {
         this.lex = pLex;
