@@ -26,20 +26,15 @@ public class InfixExpression implements Expression{
     }
 
     @Override
-    public void expressionNode() {
-
-    }
+    public void expressionNode() { }
 
     @Override
     public String tokenLiteral() {
-        return null;
+        return this.tok.literal;
     }
 
     @Override
     public String toString() {
-        return  ", left=" + left +
-                ", op='" + op + '\'' +
-                ", right=" + right +
-                '}';
+        return  "(" + left + " " + op + " " + right + ")";
     }
 }

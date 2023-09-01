@@ -5,10 +5,7 @@ import Parser.AST.Expressions.*;
 import Token.*;
 import Lexer.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 enum Operator {
     BLANK,
@@ -67,6 +64,25 @@ public class Parser {
         };
         this.setPrefix(TokenType.MINUS, parsePrefixExpr);
         this.setPrefix(TokenType.BANG, parsePrefixExpr);
+
+        InfixParseFn parseInfixExpr = (Expression left) -> {
+            InfixExpression infExp = new InfixExpression(this.curToken);
+            infExp.setOp(this.curToken.literal);
+            infExp.setLeft(left);
+            Operator precedence = this.curPrecedence();
+            this.nextToken();
+            infExp.setRight(this.parseExpression(precedence));
+            return infExp;
+        };
+
+        this.setInfix(TokenType.MINUS, parseInfixExpr);
+        this.setInfix(TokenType.PLUS, parseInfixExpr);
+        this.setInfix(TokenType.LESS, parseInfixExpr);
+        this.setInfix(TokenType.GREATER, parseInfixExpr);
+        this.setInfix(TokenType.ASTERISK, parseInfixExpr);
+        this.setInfix(TokenType.SLASH, parseInfixExpr);
+        this.setInfix(TokenType.EQ, parseInfixExpr);
+        this.setInfix(TokenType.BANG_EQ, parseInfixExpr);
     }
 
     private void setPrefix(TokenType pType, PrefixParseFn fn) {
@@ -80,7 +96,11 @@ public class Parser {
     public Program parseProgram() {
         Program program = new Program();
         Statement statement;
-        while (this.curToken.type != TokenType.EOF) {
+        while (!this.curTokenIs(TokenType.EOF)) {
+            if (this.curTokenIs(TokenType.SEMICOL)) {
+                this.nextToken();
+                continue;
+            }
             statement = parseStatement();
             if (statement != null)
                 program.statements.add(statement);
@@ -107,19 +127,13 @@ public class Parser {
 
         stmt.setName(new Identifier(this.curToken));
 
-
         if (expectedPeekNot(TokenType.ASSIGN)) {
             System.out.println("Parser Error: " + this.errors.get(this.errors.size()-1));
             return null;
         }
         this.nextToken();
 
-        // TODO: We're skipping the expressions until we encounter a semicolon
-        // Expression value = parseExpression();
-
-        while (!this.curTokenIs(TokenType.SEMICOL)) {
-            this.nextToken();
-        }
+        stmt.setValue(this.parseExpression(Operator.LOWEST));
 
         return stmt;
     }
@@ -130,7 +144,16 @@ public class Parser {
             this.noPrefixParseFnError(this.curToken.type);
             return null;
         }
-        return prefix.parse();
+        Expression leftExp = prefix.parse();
+
+        while(!this.peekTokenIs(TokenType.SEMICOL) && op.ordinal() < this.peekPrecedence().ordinal()) {
+            InfixParseFn infix = this.infixParseMap.get(this.peekToken.type);
+            if (infix == null)
+                return null;
+            this.nextToken();
+            leftExp = infix.parse(leftExp);
+        }
+        return leftExp;
     }
 
     private ExpressionStatement parseExpressionStatement() {
@@ -148,12 +171,8 @@ public class Parser {
         ReturnStatement stmt = new ReturnStatement(curToken);
         this.nextToken();
 
-        // TODO: We're skipping the expressions until we encounter a semicolon
-        // Expression value = parseExpression();
+        stmt.setValue(this.parseExpression(Operator.LOWEST));
 
-        while (!this.curTokenIs(TokenType.SEMICOL)) {
-            this.nextToken();
-        }
         return stmt;
     }
 
@@ -173,13 +192,19 @@ public class Parser {
         }
     }
 
+    private Operator peekPrecedence() {
+        return this.precedences.getOrDefault(this.peekToken.type, Operator.LOWEST);
+    }
+
+    private Operator curPrecedence() {
+        return this.precedences.getOrDefault(this.curToken.type, Operator.LOWEST);
+    }
+
     private boolean peekTokenIs(TokenType pType) {
         return this.peekToken.type == pType;
     }
 
-    private boolean curTokenIs(TokenType pType) {
-        return this.curToken.type == pType;
-    }
+    private boolean curTokenIs(TokenType pType) { return this.curToken.type == pType; }
 
     private void noPrefixParseFnError(TokenType pTokenType) {
         this.errors.add("no prefix parse function for "+ pTokenType + "found");
@@ -189,5 +214,5 @@ public class Parser {
         this.errors.add("Expected next Token to be "+ pType +", got "+ this.peekToken.type +" instead!");
     }
 
-    public List<String> getErrors(){ return this.errors; }
+    // public List<String> getErrors(){ return this.errors; }
 }

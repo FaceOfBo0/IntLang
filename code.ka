@@ -1,2 +1,4 @@
--12;
+let a = 4*3-2;
+let b = a/c;
+return b+a;
 !45;
