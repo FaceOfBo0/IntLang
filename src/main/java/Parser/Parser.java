@@ -7,7 +7,7 @@ import Lexer.*;
 
 import java.util.*;
 
-enum Operator {
+enum Precedence {
     BLANK,
     LOWEST,
     EQUALS,
@@ -33,12 +33,12 @@ public class Parser {
     List<String> errors = new ArrayList<>(0);
     Map<TokenType, PrefixParseFn> prefixParseMap = new HashMap<>(0);
     Map<TokenType, InfixParseFn> infixParseMap = new HashMap<>(0);
-    Map<TokenType, Operator> precedences = new HashMap<>(Map.of(TokenType.EQ, Operator.EQUALS,
-            TokenType.BANG_EQ, Operator.EQUALS, TokenType.GREATER, Operator.LESSGREATER,
-            TokenType.GREATER_EQ, Operator.LESSGREATER, TokenType.LESS, Operator.LESSGREATER,
-            TokenType.LESS_EQ, Operator.LESSGREATER, TokenType.PLUS, Operator.SUM,
-            TokenType.MINUS, Operator.SUM, TokenType.ASTERISK, Operator.PRODUCT,
-            TokenType.SLASH, Operator.PRODUCT));
+    Map<TokenType, Precedence> precedences = new HashMap<>(Map.of(TokenType.EQ, Precedence.EQUALS,
+            TokenType.BANG_EQ, Precedence.EQUALS, TokenType.GREATER, Precedence.LESSGREATER,
+            TokenType.GREATER_EQ, Precedence.LESSGREATER, TokenType.LESS, Precedence.LESSGREATER,
+            TokenType.LESS_EQ, Precedence.LESSGREATER, TokenType.PLUS, Precedence.SUM,
+            TokenType.MINUS, Precedence.SUM, TokenType.ASTERISK, Precedence.PRODUCT,
+            TokenType.SLASH, Precedence.PRODUCT));
 
     public Parser(Lexer pLex) {
         this.lex = pLex;
@@ -49,17 +49,22 @@ public class Parser {
 
     private void initParseFns(){
         this.setPrefix(TokenType.IDENT, () -> new Identifier(this.curToken));
-        this.setPrefix(TokenType.INT, () -> {
-            IntegerLiteral intLit = new IntegerLiteral(this.curToken);
-            intLit.setValue(Long.valueOf(this.curToken.literal));
-            return intLit;
+        this.setPrefix(TokenType.INT, () -> new IntegerLiteral(this.curToken, Long.valueOf(this.curToken.literal)));
+        this.setPrefix(TokenType.FALSE, () -> new BooleanLiteral(this.curToken, false));
+        this.setPrefix(TokenType.TRUE, () -> new BooleanLiteral(this.curToken, true));
+        this.setPrefix(TokenType.LPAREN, () -> {
+            this.nextToken();
+            Expression exp = this.parseExpression(Precedence.LOWEST);
+            if (this.expectedPeekNot(TokenType.RPAREN))
+                return null;
+            return exp;
         });
 
         PrefixParseFn parsePrefixExpr = () -> {
             PrefixExpression prefExp = new PrefixExpression(this.curToken);
             prefExp.setOp(this.curToken.literal);
             this.nextToken();
-            prefExp.setRight(this.parseExpression(Operator.PREFIX));
+            prefExp.setRight(this.parseExpression(Precedence.PREFIX));
             return prefExp;
         };
         this.setPrefix(TokenType.MINUS, parsePrefixExpr);
@@ -69,12 +74,11 @@ public class Parser {
             InfixExpression infExp = new InfixExpression(this.curToken);
             infExp.setOp(this.curToken.literal);
             infExp.setLeft(left);
-            Operator precedence = this.curPrecedence();
+            Precedence precedence = this.curPrecedence();
             this.nextToken();
             infExp.setRight(this.parseExpression(precedence));
             return infExp;
         };
-
         this.setInfix(TokenType.MINUS, parseInfixExpr);
         this.setInfix(TokenType.PLUS, parseInfixExpr);
         this.setInfix(TokenType.LESS, parseInfixExpr);
@@ -120,25 +124,25 @@ public class Parser {
     private Statement parseLetStatement() {
         LetStatement stmt = new LetStatement(curToken);
 
-        if (expectedPeekNot(TokenType.IDENT)) {
+        if (this.expectedPeekNot(TokenType.IDENT)) {
             System.out.println("Parser Error: " + this.errors.get(this.errors.size()-1));
             return null;
         }
 
         stmt.setName(new Identifier(this.curToken));
 
-        if (expectedPeekNot(TokenType.ASSIGN)) {
+        if (this.expectedPeekNot(TokenType.ASSIGN)) {
             System.out.println("Parser Error: " + this.errors.get(this.errors.size()-1));
             return null;
         }
         this.nextToken();
 
-        stmt.setValue(this.parseExpression(Operator.LOWEST));
+        stmt.setValue(this.parseExpression(Precedence.LOWEST));
 
         return stmt;
     }
 
-    private Expression parseExpression(Operator op) {
+    private Expression parseExpression(Precedence precedence) {
         PrefixParseFn prefix = this.prefixParseMap.get(this.curToken.type);
         if (prefix == null) {
             this.noPrefixParseFnError(this.curToken.type);
@@ -146,7 +150,7 @@ public class Parser {
         }
         Expression leftExp = prefix.parse();
 
-        while(!this.peekTokenIs(TokenType.SEMICOL) && op.ordinal() < this.peekPrecedence().ordinal()) {
+        while(!this.peekTokenIs(TokenType.SEMICOL) && precedence.ordinal() < this.peekPrecedence().ordinal()) {
             InfixParseFn infix = this.infixParseMap.get(this.peekToken.type);
             if (infix == null)
                 return null;
@@ -159,7 +163,7 @@ public class Parser {
     private ExpressionStatement parseExpressionStatement() {
         ExpressionStatement stmt = new ExpressionStatement(this.curToken);
 
-        stmt.setValue(this.parseExpression(Operator.LOWEST));
+        stmt.setValue(this.parseExpression(Precedence.LOWEST));
 
         if (this.peekTokenIs(TokenType.SEMICOL))
             this.nextToken();
@@ -171,7 +175,7 @@ public class Parser {
         ReturnStatement stmt = new ReturnStatement(curToken);
         this.nextToken();
 
-        stmt.setValue(this.parseExpression(Operator.LOWEST));
+        stmt.setValue(this.parseExpression(Precedence.LOWEST));
 
         return stmt;
     }
@@ -182,7 +186,7 @@ public class Parser {
     }
 
     private boolean expectedPeekNot(TokenType pType) {
-        if (peekToken.type == pType) {
+        if (this.peekToken.type == pType) {
             this.nextToken();
             return false;
         }
@@ -192,12 +196,12 @@ public class Parser {
         }
     }
 
-    private Operator peekPrecedence() {
-        return this.precedences.getOrDefault(this.peekToken.type, Operator.LOWEST);
+    private Precedence peekPrecedence() {
+        return this.precedences.getOrDefault(this.peekToken.type, Precedence.LOWEST);
     }
 
-    private Operator curPrecedence() {
-        return this.precedences.getOrDefault(this.curToken.type, Operator.LOWEST);
+    private Precedence curPrecedence() {
+        return this.precedences.getOrDefault(this.curToken.type, Precedence.LOWEST);
     }
 
     private boolean peekTokenIs(TokenType pType) {

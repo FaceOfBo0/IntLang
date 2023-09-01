@@ -3,17 +3,13 @@ package Parser.AST.Expressions;
 import Parser.AST.Expression;
 import Token.*;
 
-public class IntegerLiteral implements Expression {
+public class BooleanLiteral implements Expression {
     Token tok;
-    Long value;
+    boolean value;
 
-    public IntegerLiteral(Token pToken, Long pValue) {
-        this.tok = pToken;
+    public BooleanLiteral(Token tok, boolean pValue) {
+        this.tok = tok;
         this.value = pValue;
-    }
-
-    public void setValue(Long value) {
-        this.value = value;
     }
 
     @Override
@@ -28,6 +24,6 @@ public class IntegerLiteral implements Expression {
 
     @Override
     public String toString() {
-        return this.tok.literal;
+        return this.tokenLiteral();
     }
 }
