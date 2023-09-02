@@ -8,18 +8,10 @@ import java.util.List;
 
 public class BlockStatement implements Statement {
     Token tok;
-    List<Statement> statements = new ArrayList<>(0);
+    public List<Statement> statements = new ArrayList<>(0);
 
     public BlockStatement(Token tok) {
         this.tok = tok;
-    }
-
-    public List<Statement> getStatements() {
-        return this.statements;
-    }
-
-    public void addStatement(Statement stmt) {
-        this.statements.add(stmt);
     }
 
     @Override

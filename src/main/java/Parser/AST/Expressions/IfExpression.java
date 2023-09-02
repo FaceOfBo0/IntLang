@@ -1,17 +1,18 @@
 package Parser.AST.Expressions;
 
 import Parser.AST.Expression;
-import Parser.AST.Statement;
 import Parser.AST.Statements.BlockStatement;
 import Token.*;
 
 public class IfExpression implements Expression {
     Token tok;
-    Expression condition;
-    BlockStatement consequence;
-    BlockStatement alternative;
+    public Expression condition;
+    public BlockStatement consequence;
+    public BlockStatement alternative;
 
-
+    public IfExpression(Token tok) {
+        this.tok = tok;
+    }
 
     @Override
     public void expressionNode() { }

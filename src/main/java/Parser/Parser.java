@@ -60,6 +60,21 @@ public class Parser {
             return exp;
         });
 
+        this.setPrefix(TokenType.IF, () -> {
+            IfExpression ifExp = new IfExpression(this.curToken);
+            if (this.expectedPeekNot(TokenType.LPAREN))
+                return null;
+            this.nextToken();
+            ifExp.condition = this.parseExpression(Precedence.LOWEST);
+            if (this.expectedPeekNot(TokenType.RPAREN))
+                return null;
+            if (this.expectedPeekNot(TokenType.LBRACE))
+                return null;
+
+            ifExp.consequence = this.parseBlockStatement();
+            return ifExp;
+        });
+
         PrefixParseFn parsePrefixExpr = () -> {
             PrefixExpression prefExp = new PrefixExpression(this.curToken);
             prefExp.setOp(this.curToken.literal);
@@ -121,8 +136,20 @@ public class Parser {
         }
     }
 
+    private BlockStatement parseBlockStatement() {
+        BlockStatement block = new BlockStatement(this.curToken);
+        this.nextToken();
+        while (!(this.curTokenIs(TokenType.RBRACE) || this.curTokenIs(TokenType.EOF))) {
+            Statement stmt = this.parseStatement();
+            if (stmt != null)
+                block.statements.add(stmt);
+            this.nextToken();
+        }
+        return block;
+    }
+
     private Statement parseLetStatement() {
-        LetStatement stmt = new LetStatement(curToken);
+        LetStatement stmt = new LetStatement(this.curToken);
 
         if (this.expectedPeekNot(TokenType.IDENT)) {
             System.out.println("Parser Error: " + this.errors.get(this.errors.size()-1));
@@ -135,6 +162,15 @@ public class Parser {
             System.out.println("Parser Error: " + this.errors.get(this.errors.size()-1));
             return null;
         }
+        this.nextToken();
+
+        stmt.setValue(this.parseExpression(Precedence.LOWEST));
+
+        return stmt;
+    }
+
+    private Statement parseReturnStatement() {
+        ReturnStatement stmt = new ReturnStatement(curToken);
         this.nextToken();
 
         stmt.setValue(this.parseExpression(Precedence.LOWEST));
@@ -167,15 +203,6 @@ public class Parser {
 
         if (this.peekTokenIs(TokenType.SEMICOL))
             this.nextToken();
-
-        return stmt;
-    }
-
-    private Statement parseReturnStatement() {
-        ReturnStatement stmt = new ReturnStatement(curToken);
-        this.nextToken();
-
-        stmt.setValue(this.parseExpression(Precedence.LOWEST));
 
         return stmt;
     }
