@@ -1,4 +1,8 @@
-if (a == 4) {
-    let a = 4*(3-2)+5;
-}
 let b = a/c;
+if (b == 4) {
+    let a = 4*(3-2)+5;
+    if (a == true) {
+        return 42;
+    }
+}
+
