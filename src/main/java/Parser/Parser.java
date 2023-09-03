@@ -28,8 +28,9 @@ interface InfixParseFn {
 
 public class Parser {
     Lexer lex;
-    Token curToken;
-    Token peekToken;
+    Token curToken = null;
+    Token peekToken = null;
+    List<Token> tokens = new ArrayList<>(0);
     List<String> errors = new ArrayList<>(0);
     Map<TokenType, PrefixParseFn> prefixParseMap = new HashMap<>(0);
     Map<TokenType, InfixParseFn> infixParseMap = new HashMap<>(0);
@@ -70,8 +71,13 @@ public class Parser {
                 return null;
             if (this.expectedPeekNot(TokenType.LBRACE))
                 return null;
-
             ifExp.consequence = this.parseBlockStatement();
+            if (this.peekTokenIs(TokenType.ELSE)) {
+                this.nextToken();
+                if (this.expectedPeekNot(TokenType.LBRACE))
+                    return null;
+                ifExp.alternative = this.parseBlockStatement();
+            }
             return ifExp;
         });
 
@@ -131,6 +137,7 @@ public class Parser {
     private Statement parseStatement(){
         switch (this.curToken.type){
             case LET -> { return this.parseLetStatement(); }
+            case SEMICOL -> { return null; }
             case RETURN -> { return this.parseReturnStatement(); }
             default -> { return this.parseExpressionStatement(); }
         }
@@ -210,6 +217,7 @@ public class Parser {
     public void nextToken() {
         this.curToken = this.peekToken;
         this.peekToken = this.lex.nextToken();
+        this.tokens.add(this.peekToken);
     }
 
     private boolean expectedPeekNot(TokenType pType) {

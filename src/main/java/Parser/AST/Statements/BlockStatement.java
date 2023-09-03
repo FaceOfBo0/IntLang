@@ -1,5 +1,6 @@
 package Parser.AST.Statements;
 
+import Parser.AST.Expressions.IfExpression;
 import Parser.AST.Statement;
 import Token.*;
 
@@ -24,10 +25,12 @@ public class BlockStatement implements Statement {
 
     @Override
     public String toString() {
-        StringBuilder out = new StringBuilder();
-        out.append("{\n");
-        this.statements.forEach(elem -> out.append(elem).append("\n"));
-        out.append("}");
-        return out.toString();
+        StringBuilder outString = new StringBuilder();
+        String tabsLevel = "\t";
+        tabsLevel = tabsLevel.repeat(IfExpression.nestLevel);
+        for (Statement stmt: this.statements)
+            outString.append(tabsLevel).append(stmt).append("\n");
+        outString.append(tabsLevel, 0, tabsLevel.length()-1).append("}");
+        return outString.toString();
     }
 }

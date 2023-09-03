@@ -18,7 +18,9 @@ public class Program implements Node {
     @Override
     public String toString() {
         StringBuilder out = new StringBuilder();
-        this.statements.forEach(elem -> out.append("\n").append(elem));
+        for (int i = 0; i < this.statements.size() - 1; i++)
+            out.append(this.statements.get(i)).append("\n");
+        out.append(this.statements.get((this.statements.size() - 1)));
         return out.toString();
     }
 }

@@ -1,6 +1,7 @@
 package Parser.AST.Expressions;
 
 import Parser.AST.Expression;
+import Parser.AST.Statement;
 import Parser.AST.Statements.BlockStatement;
 import Token.*;
 
@@ -9,6 +10,7 @@ public class IfExpression implements Expression {
     public Expression condition;
     public BlockStatement consequence;
     public BlockStatement alternative;
+    public static int nestLevel = 0;
 
     public IfExpression(Token tok) {
         this.tok = tok;
@@ -24,10 +26,11 @@ public class IfExpression implements Expression {
 
     @Override
     public String toString() {
-        String out= "If " + this.condition + " " + this.consequence;
+        nestLevel++;
+        StringBuilder out = new StringBuilder("If " + this.condition + " {\n" + this.consequence);
         if (this.alternative != null)
-            out += " else " + this.alternative;
-
-        return out;
+            out.append(" else {\n").append(this.alternative);
+        nestLevel--;
+        return out.toString();
     }
 }
