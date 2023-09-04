@@ -42,16 +42,20 @@ public class Parser {
 
     public Parser(Lexer pLex) {
         this.lex = pLex;
+        this.precedences.put(TokenType.LPAREN, Precedence.CALL);
         this.nextToken();
         this.nextToken();
         this.initParseFns();
     }
 
     private void initParseFns(){
+        // Identifiers & Integer Literals
         this.setPrefix(TokenType.IDENT, () -> new Identifier(this.curToken));
         this.setPrefix(TokenType.INT, () -> new IntegerLiteral(this.curToken, Long.valueOf(this.curToken.literal)));
+        // Boolean Literals
         this.setPrefix(TokenType.FALSE, () -> new BooleanLiteral(this.curToken, false));
         this.setPrefix(TokenType.TRUE, () -> new BooleanLiteral(this.curToken, true));
+        // Grouped Expressions
         this.setPrefix(TokenType.LPAREN, () -> {
             this.nextToken();
             Expression exp = this.parseExpression(Precedence.LOWEST);
@@ -59,7 +63,14 @@ public class Parser {
                 return null;
             return exp;
         });
-
+        // Call Expression
+        this.setInfix(TokenType.LPAREN, (Expression function) -> {
+            CallExpression callExp = new CallExpression(this.curToken);
+            callExp.setFnIdent(function);
+            callExp.setParams(this.parseCallParameters());
+            return callExp;
+        });
+        // If Expression
         this.setPrefix(TokenType.IF, () -> {
             IfExpression ifExp = new IfExpression(this.curToken);
             if (this.expectedPeekNot(TokenType.LPAREN))
@@ -79,7 +90,19 @@ public class Parser {
             }
             return ifExp;
         });
-
+        // Function Expression
+        this.setPrefix(TokenType.FUNC, () -> {
+            FunctionLiteral fnExp = new FunctionLiteral(this.curToken);
+            if (this.expectedPeekNot(TokenType.LPAREN))
+                return null;
+            this.nextToken();
+            fnExp.setParameters(this.parseFunctionParameters());
+            if (this.expectedPeekNot(TokenType.LBRACE))
+                return null;
+            fnExp.setBody(this.parseBlockStatement());
+            return fnExp;
+        });
+        // Prefix Expressions
         PrefixParseFn parsePrefixExpr = () -> {
             PrefixExpression prefExp = new PrefixExpression(this.curToken);
             prefExp.setOp(this.curToken.literal);
@@ -89,7 +112,7 @@ public class Parser {
         };
         this.setPrefix(TokenType.MINUS, parsePrefixExpr);
         this.setPrefix(TokenType.BANG, parsePrefixExpr);
-
+        // Infix Expressions
         InfixParseFn parseInfixExpr = (Expression left) -> {
             InfixExpression infExp = new InfixExpression(this.curToken);
             infExp.setOp(this.curToken.literal);
@@ -107,6 +130,25 @@ public class Parser {
         this.setInfix(TokenType.SLASH, parseInfixExpr);
         this.setInfix(TokenType.EQ, parseInfixExpr);
         this.setInfix(TokenType.BANG_EQ, parseInfixExpr);
+    }
+
+    private List<Expression> parseCallParameters() {
+        return null;
+    }
+
+    private List<Identifier> parseFunctionParameters() {
+        List<Identifier> idents = new ArrayList<>(0);
+        if (this.curTokenIs(TokenType.RPAREN))
+            return idents;
+        idents.add(new Identifier(this.curToken));
+        while (this.peekTokenIs(TokenType.COMMA)) {
+            this.nextToken();
+            this.nextToken();
+            idents.add(new Identifier(this.curToken));
+        }
+        if (this.expectedPeekNot(TokenType.RPAREN))
+            return null;
+        return idents;
     }
 
     private void setPrefix(TokenType pType, PrefixParseFn fn) {

@@ -23,6 +23,21 @@ public class BooleanLiteral implements Expression {
     }
 
     @Override
+    public int length() {
+        return this.toString().length();
+    }
+
+    @Override
+    public char charAt(int index) {
+        return this.toString().charAt(index);
+    }
+
+    @Override
+    public CharSequence subSequence(int start, int end) {
+        return this.toString().subSequence(start, end);
+    }
+
+    @Override
     public String toString() {
         return this.tokenLiteral();
     }

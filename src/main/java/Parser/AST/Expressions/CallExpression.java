@@ -2,31 +2,27 @@ package Parser.AST.Expressions;
 
 import Parser.AST.Expression;
 import Token.*;
+import java.util.List;
 
-public class PrefixExpression implements Expression {
+public class CallExpression implements Expression {
     Token tok;
-    String op;
-    Expression right;
+    Expression function;
+    List<Expression> params;
 
-    public PrefixExpression(Token tok) {
+    public CallExpression(Token tok) {
         this.tok = tok;
     }
 
-    public void setOp(String op) {
-        this.op = op;
+    public void setFnIdent(Expression pFunction) {
+        this.function = pFunction;
     }
 
-    public void setRight(Expression right) {
-        this.right = right;
+    public void setParams(List<Expression> params) {
+        this.params = params;
     }
 
     @Override
-    public void expressionNode() {}
-
-    @Override
-    public String tokenLiteral() {
-        return this.tok.literal;
-    }
+    public void expressionNode() { }
 
     @Override
     public int length() {
@@ -44,7 +40,7 @@ public class PrefixExpression implements Expression {
     }
 
     @Override
-    public String toString() {
-        return "(" + op + right + ")";
+    public String tokenLiteral() {
+        return this.function + "(" + String.join(", ", this.params) + ")";
     }
 }

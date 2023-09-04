@@ -4,19 +4,31 @@ import Parser.AST.Expression;
 import Parser.AST.Statements.BlockStatement;
 import Token.*;
 
-public class IfExpression implements Expression {
-    Token tok;
-    public Expression condition;
-    public BlockStatement consequence;
-    public BlockStatement alternative;
-    public static int nestLevel = 0;
+import java.util.ArrayList;
+import java.util.List;
 
-    public IfExpression(Token tok) {
+public class FunctionLiteral implements Expression {
+    Token tok;
+    List<Identifier> parameters = new ArrayList<>(0);
+    BlockStatement body;
+    public static Integer nestLevel = 0;
+
+    public FunctionLiteral(Token tok) {
         this.tok = tok;
     }
 
+    public void setParameters(List<Identifier> parameters) {
+        this.parameters = parameters;
+    }
+
+    public void setBody(BlockStatement body) {
+        this.body = body;
+    }
+
     @Override
-    public void expressionNode() { }
+    public void expressionNode() {
+
+    }
 
     @Override
     public String tokenLiteral() {
@@ -41,10 +53,8 @@ public class IfExpression implements Expression {
     @Override
     public String toString() {
         nestLevel++;
-        StringBuilder out = new StringBuilder("If " + this.condition + " {\n" + this.consequence);
-        if (this.alternative != null)
-            out.append("\nelse {\n").append(this.alternative);
+        String strOut = "fn(" + String.join(", ", this.parameters) + ") {\n" + this.body;
         nestLevel--;
-        return out.toString();
+        return strOut;
     }
 }
