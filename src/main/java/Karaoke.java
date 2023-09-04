@@ -1,4 +1,5 @@
 import Lexer.Lexer;
+import Parser.AST.Program;
 import Parser.Parser;
 import Token.Token;
 
@@ -31,7 +32,7 @@ public class Karaoke {
         InputStreamReader input = new InputStreamReader(System.in);
         BufferedReader reader = new BufferedReader(input);
         for (;;) {
-            System.out.print("> ");
+            System.out.print(">> ");
             String line = reader.readLine();
             if (Objects.equals(line, "")) break;
             run(line);
@@ -41,7 +42,10 @@ public class Karaoke {
     private static void run(String source) {
         Lexer scanner = new Lexer(source);
         Parser par = new Parser(scanner);
-        System.out.println(par.parseProgram());
+        Program prg = par.parseProgram();
+        if (par.getErrors().size() != 0)
+            par.getErrors().forEach(System.out::println);
+        else System.out.println(prg);
     }
 
 //    static void error(int line, String msg) {

@@ -253,5 +253,5 @@ public class Parser {
         this.errors.add("Expected next Token to be "+ pType +", got "+ this.peekToken.type +" instead!");
     }
 
-    // public List<String> getErrors(){ return this.errors; }
+    public List<String> getErrors(){ return this.errors; }
 }

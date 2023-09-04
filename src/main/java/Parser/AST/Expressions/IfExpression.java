@@ -29,7 +29,7 @@ public class IfExpression implements Expression {
         nestLevel++;
         StringBuilder out = new StringBuilder("If " + this.condition + " {\n" + this.consequence);
         if (this.alternative != null)
-            out.append(" else {\n").append(this.alternative);
+            out.append("\nelse {\n").append(this.alternative);
         nestLevel--;
         return out.toString();
     }
