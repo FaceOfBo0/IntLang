@@ -1,7 +1,6 @@
 import Lexer.Lexer;
 import Parser.AST.Program;
 import Parser.Parser;
-import Token.Token;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -9,9 +8,6 @@ import java.nio.file.*;
 import java.util.*;
 
 public class Karaoke {
-
-//    static boolean hadError = false;
-
     public static void main(String[] args) throws IOException {
         if (args.length > 1) {
             System.out.println("Usage: karaoke [script]");
@@ -47,6 +43,9 @@ public class Karaoke {
             par.getErrors().forEach(System.out::println);
         else System.out.println(prg);
     }
+}
+
+//    static boolean hadError = false;
 
 //    static void error(int line, String msg) {
 //        report(line, "", msg);
@@ -56,4 +55,3 @@ public class Karaoke {
 //        System.err.println("[line "+ line +"] Error" + where +": " + msg);
 //        hadError = true;
 //    }
-}

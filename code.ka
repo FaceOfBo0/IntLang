@@ -6,7 +6,7 @@ if (b == 4) {
 }
 else {
     if (c == 4*a) {
-    let d = 5*b/2;
+    let d = 5+b/2;
     !c;
     }
 }

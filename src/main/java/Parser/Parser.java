@@ -8,7 +8,6 @@ import Lexer.*;
 import java.util.*;
 
 enum Precedence {
-    BLANK,
     LOWEST,
     EQUALS,
     LESSGREATER,

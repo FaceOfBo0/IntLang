@@ -7,7 +7,6 @@ import java.util.*;
 public class Lexer {
     private final Map<String, TokenType> keywords = new HashMap<>(Map.of("let", TokenType.LET, "fn", TokenType.FUNC, "true", TokenType.TRUE,
             "false", TokenType.FALSE, "return", TokenType.RETURN, "if", TokenType.IF, "else", TokenType.ELSE));
-    public  List<Token> tokens = new ArrayList<>(0);
     public String source;
     public char curChar;
     public int readPos = 0;
@@ -123,14 +122,14 @@ public class Lexer {
         this.readChar();
         return tok;
     }
-
-    public List<Token> tokenize() {
-        Token tok = new Token(TokenType.ILLEGAL);
-        while (!(tok.type == TokenType.EOF)) {
-            tok = this.nextToken();
-            tokens.add(tok);
-        }
-        return this.tokens;
-    }
-
 }
+
+//public  List<Token> tokens = new ArrayList<>(0);
+//    public List<Token> tokenize() {
+//        Token tok = new Token(TokenType.ILLEGAL);
+//        while (!(tok.type == TokenType.EOF)) {
+//            tok = this.nextToken();
+//            tokens.add(tok);
+//        }
+//        return this.tokens;
+//    }
