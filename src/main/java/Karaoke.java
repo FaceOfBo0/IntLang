@@ -39,7 +39,7 @@ public class Karaoke {
         Lexer scanner = new Lexer(source);
         Parser par = new Parser(scanner);
         Program prg = par.parseProgram();
-        if (par.getErrors().size() != 0)
+        if (!par.getErrors().isEmpty())
             par.getErrors().forEach(System.out::println);
         else System.out.println(prg);
     }
