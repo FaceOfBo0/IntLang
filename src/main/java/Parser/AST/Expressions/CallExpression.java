@@ -41,6 +41,11 @@ public class CallExpression implements Expression {
 
     @Override
     public String tokenLiteral() {
+        return this.tok.literal;
+    }
+
+    @Override
+    public String toString() {
         return this.function + "(" + String.join(", ", this.params) + ")";
     }
 }

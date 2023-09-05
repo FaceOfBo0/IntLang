@@ -1,9 +1,1 @@
-let add = fn(a,b) {
-return a+b
-};
-if (b == 4) {
-    let a = 4*(3-2)+5;
-}
-else {
-    let d = 5+b/2;
-}
+if (x < y) { x }

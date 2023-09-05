@@ -67,6 +67,7 @@ public class Parser {
         this.setInfix(TokenType.LPAREN, (Expression function) -> {
             CallExpression callExp = new CallExpression(this.curToken);
             callExp.setFnIdent(function);
+            this.nextToken();
             callExp.setParams(this.parseCallParameters());
             return callExp;
         });
@@ -133,7 +134,18 @@ public class Parser {
     }
 
     private List<Expression> parseCallParameters() {
-        return null;
+        List<Expression> exprs = new ArrayList<>(0);
+        if (this.curTokenIs(TokenType.RPAREN))
+            return exprs;
+        exprs.add(this.parseExpression(Precedence.LOWEST));
+        while (this.peekTokenIs(TokenType.COMMA)) {
+            this.nextToken();
+            this.nextToken();
+            exprs.add(this.parseExpression(Precedence.LOWEST));
+        }
+        if (this.expectedPeekNot(TokenType.RPAREN))
+            return null;
+        return exprs;
     }
 
     private List<Identifier> parseFunctionParameters() {
@@ -178,7 +190,6 @@ public class Parser {
     private Statement parseStatement(){
         switch (this.curToken.type){
             case LET -> { return this.parseLetStatement(); }
-            case SEMICOL -> { return null; }
             case RETURN -> { return this.parseReturnStatement(); }
             default -> { return this.parseExpressionStatement(); }
         }
@@ -200,19 +211,22 @@ public class Parser {
         LetStatement stmt = new LetStatement(this.curToken);
 
         if (this.expectedPeekNot(TokenType.IDENT)) {
-            System.out.println("Parser Error: " + this.errors.get(this.errors.size()-1));
+           // System.out.println("Parser Error: " + this.errors.get(this.errors.size()-1));
             return null;
         }
 
         stmt.setName(new Identifier(this.curToken));
 
         if (this.expectedPeekNot(TokenType.ASSIGN)) {
-            System.out.println("Parser Error: " + this.errors.get(this.errors.size()-1));
+           // System.out.println("Parser Error: " + this.errors.get(this.errors.size()-1));
             return null;
         }
         this.nextToken();
 
         stmt.setValue(this.parseExpression(Precedence.LOWEST));
+
+        if(this.peekTokenIs(TokenType.SEMICOL))
+            this.nextToken();
 
         return stmt;
     }
@@ -222,6 +236,9 @@ public class Parser {
         this.nextToken();
 
         stmt.setValue(this.parseExpression(Precedence.LOWEST));
+
+        if(this.peekTokenIs(TokenType.SEMICOL))
+            this.nextToken();
 
         return stmt;
     }
@@ -291,7 +308,7 @@ public class Parser {
     }
 
     private void peekError(TokenType pType) {
-        this.errors.add("Expected next Token to be "+ pType +", got "+ this.peekToken.type +" instead!");
+        this.errors.add("Parse Error: Expected next Token to be "+ pType +", got "+ this.peekToken.type +" instead!");
     }
 
     public List<String> getErrors(){ return this.errors; }
