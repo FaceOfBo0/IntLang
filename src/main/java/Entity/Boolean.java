@@ -1,14 +1,13 @@
 package Entity;
 
-public class Integer implements Entity {
-    long value;
-
+public class Boolean implements Entity {
+    boolean value;
     @Override
     public EntityType Type() {
-        return EntityType.INT_OBJ;
+        return EntityType.BOOLEAN_OBJ;
     }
 
-    public void setValue(long value) {
+    public void setValue(boolean value) {
         this.value = value;
     }
 
