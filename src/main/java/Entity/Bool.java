@@ -1,14 +1,10 @@
 package Entity;
 
-public class Boolean implements Entity {
-    boolean value;
+public record Bool(boolean value) implements Entity {
+
     @Override
     public EntityType Type() {
         return EntityType.BOOLEAN_OBJ;
-    }
-
-    public void setValue(boolean value) {
-        this.value = value;
     }
 
     @Override

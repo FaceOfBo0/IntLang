@@ -3,18 +3,7 @@ package Parser.AST.Statements;
 import Parser.AST.*;
 import Token.*;
 
-public class ExpressionStatement implements Statement {
-    Token tok;
-    Expression value;
-
-    public ExpressionStatement(Token pToken) {
-        this.tok = pToken;
-        this.value = null;
-    }
-
-    public void setValue(Expression value) {
-        this.value = value;
-    }
+public record ExpressionStatement(Token tok, Expression value) implements Statement {
 
     @Override
     public String tokenLiteral() {

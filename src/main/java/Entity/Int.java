@@ -1,15 +1,10 @@
 package Entity;
 
-public class Integer implements Entity {
-    long value;
+public record Int(long value) implements Entity {
 
     @Override
     public EntityType Type() {
         return EntityType.INT_OBJ;
-    }
-
-    public void setValue(long value) {
-        this.value = value;
     }
 
     @Override

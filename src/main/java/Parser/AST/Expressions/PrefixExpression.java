@@ -12,6 +12,14 @@ public class PrefixExpression implements Expression {
         this.tok = tok;
     }
 
+    public String getOp() {
+        return op;
+    }
+
+    public Expression getRight() {
+        return right;
+    }
+
     public void setOp(String op) {
         this.op = op;
     }

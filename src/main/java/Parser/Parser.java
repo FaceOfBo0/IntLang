@@ -51,7 +51,7 @@ public class Parser {
     private void initParseFns(){
         // Identifiers & Integer Literals
         this.setPrefix(TokenType.IDENT, () -> new Identifier(this.curToken));
-        this.setPrefix(TokenType.INT, () -> new IntegerLiteral(this.curToken, Long.valueOf(this.curToken.literal)));
+        this.setPrefix(TokenType.INT, () -> new IntegerLiteral(this.curToken, Long.parseLong(this.curToken.literal)));
         // Boolean Literals
         this.setPrefix(TokenType.FALSE, () -> new BooleanLiteral(this.curToken, false));
         this.setPrefix(TokenType.TRUE, () -> new BooleanLiteral(this.curToken, true));
@@ -181,7 +181,7 @@ public class Parser {
             }
             statement = parseStatement();
             if (statement != null)
-                program.statements.add(statement);
+                program.getStatements().add(statement);
             this.nextToken();
         }
         return program;
@@ -262,9 +262,7 @@ public class Parser {
     }
 
     private ExpressionStatement parseExpressionStatement() {
-        ExpressionStatement stmt = new ExpressionStatement(this.curToken);
-
-        stmt.setValue(this.parseExpression(Precedence.LOWEST));
+        ExpressionStatement stmt = new ExpressionStatement(this.curToken, this.parseExpression(Precedence.LOWEST));
 
         if (this.peekTokenIs(TokenType.SEMICOL))
             this.nextToken();

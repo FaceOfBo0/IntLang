@@ -3,14 +3,8 @@ package Parser.AST.Expressions;
 import Parser.AST.Expression;
 import Token.*;
 
-public class IntegerLiteral implements Expression {
-    Token tok;
-    Long value;
+public record IntegerLiteral(Token tok, long value) implements Expression {
 
-    public IntegerLiteral(Token pToken, Long pValue) {
-        this.tok = pToken;
-        this.value = pValue;
-    }
 
     @Override
     public void expressionNode() { }

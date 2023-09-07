@@ -5,7 +5,11 @@ import java.util.List;
 
 public class Program implements Node {
 
-    public List<Statement> statements = new ArrayList<>(0);
+    private final List<Statement> statements = new ArrayList<>(0);
+
+    public List<Statement> getStatements() {
+        return statements;
+    }
 
     @Override
     public String tokenLiteral() {

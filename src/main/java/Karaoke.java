@@ -1,4 +1,6 @@
-import Lexer.Lexer;
+import Entity.*;
+import Interpreter.*;
+import Lexer.*;
 import Parser.AST.Program;
 import Parser.Parser;
 
@@ -39,11 +41,19 @@ public class Karaoke {
         Lexer scanner = new Lexer(source);
         Parser par = new Parser(scanner);
         Program prg = par.parseProgram();
+        Entity eval;
         if (!par.getErrors().isEmpty())
             par.getErrors().forEach(System.out::println);
-        else System.out.println(prg);
+        else {
+            eval = Interpreter.eval(prg);
+            if (eval != null)
+                System.out.println(eval.Inspect());
+        }
     }
 }
+
+
+
 
 //    static boolean hadError = false;
 
