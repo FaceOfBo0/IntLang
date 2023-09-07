@@ -3,30 +3,7 @@ package Parser.AST.Expressions;
 import Parser.AST.Expression;
 import Token.*;
 
-public class PrefixExpression implements Expression {
-    Token tok;
-    String op;
-    Expression right;
-
-    public PrefixExpression(Token tok) {
-        this.tok = tok;
-    }
-
-    public String getOp() {
-        return op;
-    }
-
-    public Expression getRight() {
-        return right;
-    }
-
-    public void setOp(String op) {
-        this.op = op;
-    }
-
-    public void setRight(Expression right) {
-        this.right = right;
-    }
+public record PrefixExpression(Token tok, String op, Expression right) implements Expression {
 
     @Override
     public void expressionNode() {}

@@ -6,6 +6,7 @@ import Parser.AST.*;
 import Entity.*;
 
 import java.util.List;
+import java.util.Objects;
 
 public abstract class Interpreter {
 
@@ -23,10 +24,41 @@ public abstract class Interpreter {
         else if (pNode.getClass().equals(BooleanLiteral.class))
             return getBoolObject(((BooleanLiteral) pNode).value());
         else if (pNode.getClass() == PrefixExpression.class) {
-            Entity right = eval(((PrefixExpression) pNode).getRight());
-            return evalPrefixExpression(((PrefixExpression) pNode).getOp(), right);
+            Entity right = eval(((PrefixExpression) pNode).right());
+            return evalPrefixExpression(((PrefixExpression) pNode).op(), right);
+        }
+        else if (pNode.getClass() == InfixExpression.class) {
+            Entity left = eval(((InfixExpression) pNode).left());
+            Entity right = eval(((InfixExpression) pNode).right());
+            return evalInfixExpression(((InfixExpression) pNode).op(), left, right);
         }
         return NULL;
+    }
+
+    private static Entity evalInfixExpression(String op, Entity left, Entity right) {
+        if (left.Type() == EntityType.INT_OBJ && right.Type() == EntityType.INT_OBJ)
+            return parseIntegerInfixExpression(op, left, right);
+        else if (Objects.equals(op, "!="))
+            return getBoolObject(left != right);
+        else if (Objects.equals(op, "=="))
+            return getBoolObject(left == right);
+        return NULL;
+    }
+
+    private static Entity parseIntegerInfixExpression(String op, Entity left, Entity right) {
+        long leftVal = ((Int) left).value();
+        long rightVal = ((Int) right).value();
+        switch (op) {
+            case "+" -> {return new Int(leftVal + rightVal);}
+            case "-" -> {return new Int(leftVal - rightVal);}
+            case "*" -> {return new Int(leftVal * rightVal);}
+            case "/" -> {return new Int(leftVal / rightVal);}
+            case "<" -> {return getBoolObject(leftVal < rightVal);}
+            case ">" -> {return getBoolObject(leftVal > rightVal);}
+            case "!=" -> {return getBoolObject(leftVal != rightVal);}
+            case "==" -> {return getBoolObject(leftVal == rightVal);}
+            default -> { return NULL; }
+        }
     }
 
     private static Entity evalPrefixExpression(String op, Entity right) {

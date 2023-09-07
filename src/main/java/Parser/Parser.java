@@ -105,23 +105,20 @@ public class Parser {
         });
         // Prefix Expressions
         PrefixParseFn parsePrefixExpr = () -> {
-            PrefixExpression prefExp = new PrefixExpression(this.curToken);
-            prefExp.setOp(this.curToken.literal);
+            String op = this.curToken.literal;
             this.nextToken();
-            prefExp.setRight(this.parseExpression(Precedence.PREFIX));
-            return prefExp;
+            Expression right =this.parseExpression(Precedence.PREFIX);
+            return new PrefixExpression(this.curToken, op, right);
         };
         this.setPrefix(TokenType.MINUS, parsePrefixExpr);
         this.setPrefix(TokenType.BANG, parsePrefixExpr);
         // Infix Expressions
         InfixParseFn parseInfixExpr = (Expression left) -> {
-            InfixExpression infExp = new InfixExpression(this.curToken);
-            infExp.setOp(this.curToken.literal);
-            infExp.setLeft(left);
+            String op = this.curToken.literal;
             Precedence precedence = this.curPrecedence();
             this.nextToken();
-            infExp.setRight(this.parseExpression(precedence));
-            return infExp;
+            Expression right = this.parseExpression(precedence);
+            return new InfixExpression(this.curToken,left,op,right);
         };
         this.setInfix(TokenType.MINUS, parseInfixExpr);
         this.setInfix(TokenType.PLUS, parseInfixExpr);
