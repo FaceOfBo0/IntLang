@@ -4,16 +4,8 @@ import Parser.AST.Expression;
 import Parser.AST.Statements.BlockStatement;
 import Token.*;
 
-public class IfExpression implements Expression {
-    Token tok;
-    public Expression condition;
-    public BlockStatement consequence;
-    public BlockStatement alternative;
+public record IfExpression(Token tok, Expression condition, BlockStatement consequence, BlockStatement alternative) implements Expression {
     public static int nestLevel = 0;
-
-    public IfExpression(Token tok) {
-        this.tok = tok;
-    }
 
     @Override
     public void expressionNode() { }

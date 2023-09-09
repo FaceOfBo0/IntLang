@@ -1,4 +1,4 @@
-package Entity;
+package ObjSystem;
 
 public interface Entity {
     EntityType Type();

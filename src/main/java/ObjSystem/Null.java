@@ -1,4 +1,4 @@
-package Entity;
+package ObjSystem;
 
 public class Null implements Entity {
     @Override

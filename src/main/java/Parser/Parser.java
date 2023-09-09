@@ -73,23 +73,23 @@ public class Parser {
         });
         // If Expression
         this.setPrefix(TokenType.IF, () -> {
-            IfExpression ifExp = new IfExpression(this.curToken);
             if (this.expectedPeekNot(TokenType.LPAREN))
                 return null;
             this.nextToken();
-            ifExp.condition = this.parseExpression(Precedence.LOWEST);
+            Expression condition = this.parseExpression(Precedence.LOWEST);
             if (this.expectedPeekNot(TokenType.RPAREN))
                 return null;
             if (this.expectedPeekNot(TokenType.LBRACE))
                 return null;
-            ifExp.consequence = this.parseBlockStatement();
+            BlockStatement consequence = this.parseBlockStatement();
+            BlockStatement alternative = null;
             if (this.peekTokenIs(TokenType.ELSE)) {
                 this.nextToken();
                 if (this.expectedPeekNot(TokenType.LBRACE))
                     return null;
-                ifExp.alternative = this.parseBlockStatement();
+                alternative = this.parseBlockStatement();
             }
-            return ifExp;
+            return new IfExpression(this.curToken, condition, consequence, alternative);
         });
         // Function Expression
         this.setPrefix(TokenType.FUNC, () -> {
@@ -193,29 +193,27 @@ public class Parser {
     }
 
     private BlockStatement parseBlockStatement() {
-        BlockStatement block = new BlockStatement(this.curToken);
+        List<Statement> stmts = new ArrayList<>(0);
         this.nextToken();
         while (!(this.curTokenIs(TokenType.RBRACE) || this.curTokenIs(TokenType.EOF))) {
             Statement stmt = this.parseStatement();
             if (stmt != null)
-                block.statements.add(stmt);
+                stmts.add(stmt);
             this.nextToken();
         }
-        return block;
+        return new BlockStatement(this.curToken, stmts);
     }
 
     private Statement parseLetStatement() {
         LetStatement stmt = new LetStatement(this.curToken);
 
         if (this.expectedPeekNot(TokenType.IDENT)) {
-           // System.out.println("Parser Error: " + this.errors.get(this.errors.size()-1));
             return null;
         }
 
         stmt.setName(new Identifier(this.curToken));
 
         if (this.expectedPeekNot(TokenType.ASSIGN)) {
-           // System.out.println("Parser Error: " + this.errors.get(this.errors.size()-1));
             return null;
         }
         this.nextToken();

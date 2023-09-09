@@ -1,4 +1,4 @@
-import Entity.*;
+import ObjSystem.*;
 import Interpreter.*;
 import Lexer.*;
 import Parser.AST.Program;

@@ -1,10 +1,10 @@
-package Entity;
+package ObjSystem;
 
-public record Int(long value) implements Entity {
+public record Bool(boolean value) implements Entity {
 
     @Override
     public EntityType Type() {
-        return EntityType.INT_OBJ;
+        return EntityType.BOOLEAN_OBJ;
     }
 
     @Override

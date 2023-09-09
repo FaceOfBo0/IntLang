@@ -3,7 +3,7 @@ package Interpreter;
 import Parser.AST.Expressions.*;
 import Parser.AST.Statements.*;
 import Parser.AST.*;
-import Entity.*;
+import ObjSystem.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -19,6 +19,9 @@ public abstract class Interpreter {
             return evalStatements(((Program) pNode).getStatements());
         else if (pNode.getClass().equals(ExpressionStatement.class))
             return eval(((ExpressionStatement) pNode).value());
+        else if (pNode.getClass() == BlockStatement.class) {
+            return evalStatements(((BlockStatement) pNode).statements());
+        }
         else if (pNode.getClass().equals(IntegerLiteral.class))
             return new Int(((IntegerLiteral) pNode).value());
         else if (pNode.getClass().equals(BooleanLiteral.class))
@@ -32,8 +35,27 @@ public abstract class Interpreter {
             Entity right = eval(((InfixExpression) pNode).right());
             return evalInfixExpression(((InfixExpression) pNode).op(), left, right);
         }
+        else if (pNode.getClass() == IfExpression.class) {
+            Entity condition = eval((((IfExpression) pNode).condition()));
+            return evalIfExpression(condition, ((IfExpression) pNode).consequence(), ((IfExpression) pNode).alternative());
+        }
         return NULL;
     }
+
+    private static Entity evalIfExpression(Entity condition, BlockStatement consequence, BlockStatement alternative) {
+        if (isTruthy(condition))
+            return eval(consequence);
+        else if (alternative != null)
+            return eval(alternative);
+        else return NULL;
+    }
+
+    private static boolean isTruthy(Entity obj) {
+        if (obj == TRUE)
+            return true;
+        return obj != FALSE && obj != NULL;
+    }
+
 
     private static Entity evalInfixExpression(String op, Entity left, Entity right) {
         if (left.Type() == EntityType.INT_OBJ && right.Type() == EntityType.INT_OBJ)
