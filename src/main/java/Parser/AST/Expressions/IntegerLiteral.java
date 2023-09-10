@@ -26,11 +26,11 @@ public record IntegerLiteral(Token tok, long value) implements Expression {
 
     @Override
     public String tokenLiteral() {
-        return this.tok.literal;
+        return this.tok.literal();
     }
 
     @Override
     public String toString() {
-        return this.tok.literal;
+        return this.tok.literal();
     }
 }

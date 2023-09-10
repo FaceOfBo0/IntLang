@@ -12,7 +12,7 @@ public record BlockStatement (Token tok, List<Statement> statements) implements 
 
     @Override
     public String tokenLiteral() {
-        return this.tok.literal;
+        return this.tok.literal();
     }
     @Override
     public void statementNode() { }

@@ -10,7 +10,7 @@ public record InfixExpression(Token tok, Expression left, String op, Expression 
 
     @Override
     public String tokenLiteral() {
-        return this.tok.literal;
+        return this.tok.literal();
     }
 
     @Override

@@ -11,7 +11,7 @@ public record BooleanLiteral(Token tok, boolean value) implements Expression {
 
     @Override
     public String tokenLiteral() {
-        return this.tok.literal;
+        return this.tok.literal();
     }
 
     @Override

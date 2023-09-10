@@ -10,7 +10,7 @@ public record PrefixExpression(Token tok, String op, Expression right) implement
 
     @Override
     public String tokenLiteral() {
-        return this.tok.literal;
+        return this.tok.literal();
     }
 
     @Override

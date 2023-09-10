@@ -12,7 +12,7 @@ public record IfExpression(Token tok, Expression condition, BlockStatement conse
 
     @Override
     public String tokenLiteral() {
-        return this.tok.literal;
+        return this.tok.literal();
     }
 
     @Override

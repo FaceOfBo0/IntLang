@@ -2,31 +2,13 @@ package Parser.AST.Expressions;
 import Parser.AST.Expression;
 import Token.*;
 
-public class Identifier implements Expression {
-
-    public Token tok;
-    public String value;
-
-    public Identifier(Token pTok){
-        this.tok = pTok;
-        this.value = this.tok.literal;
-    }
-
+public record Identifier(Token tok, String value) implements Expression {
     @Override
-    public void expressionNode() {
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String pValue) {
-        this.value = pValue;
-    }
+    public void expressionNode() {}
 
     @Override
     public String tokenLiteral() {
-        return this.tok.literal;
+        return this.tok.literal();
     }
 
     @Override

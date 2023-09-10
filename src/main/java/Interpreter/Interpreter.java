@@ -15,26 +15,36 @@ public abstract class Interpreter {
     static Bool FALSE = new Bool(false);
 
     public static Entity eval(Node pNode) {
+        // Whole program
         if (pNode.getClass().equals(Program.class))
             return evalStatements(((Program) pNode).getStatements());
+        // Expression statement
         else if (pNode.getClass().equals(ExpressionStatement.class))
             return eval(((ExpressionStatement) pNode).value());
-        else if (pNode.getClass() == BlockStatement.class) {
+        // Block statement
+        else if (pNode.getClass() == BlockStatement.class)
             return evalStatements(((BlockStatement) pNode).statements());
-        }
+        // Return statement
+        else if (pNode.getClass() == ReturnStatement.class)
+            return eval(((ReturnStatement) pNode).value());
+        // Integer Literal
         else if (pNode.getClass().equals(IntegerLiteral.class))
             return new Int(((IntegerLiteral) pNode).value());
+        // Boolean Literal
         else if (pNode.getClass().equals(BooleanLiteral.class))
             return getBoolObject(((BooleanLiteral) pNode).value());
+        // Prefix Expression
         else if (pNode.getClass() == PrefixExpression.class) {
             Entity right = eval(((PrefixExpression) pNode).right());
             return evalPrefixExpression(((PrefixExpression) pNode).op(), right);
         }
+        // Infix Expression
         else if (pNode.getClass() == InfixExpression.class) {
             Entity left = eval(((InfixExpression) pNode).left());
             Entity right = eval(((InfixExpression) pNode).right());
             return evalInfixExpression(((InfixExpression) pNode).op(), left, right);
         }
+        // If Expression
         else if (pNode.getClass() == IfExpression.class) {
             Entity condition = eval((((IfExpression) pNode).condition()));
             return evalIfExpression(condition, ((IfExpression) pNode).consequence(), ((IfExpression) pNode).alternative());
@@ -55,7 +65,6 @@ public abstract class Interpreter {
             return true;
         return obj != FALSE && obj != NULL;
     }
-
 
     private static Entity evalInfixExpression(String op, Entity left, Entity right) {
         if (left.Type() == EntityType.INT_OBJ && right.Type() == EntityType.INT_OBJ)
@@ -88,15 +97,15 @@ public abstract class Interpreter {
             case "-" -> { return evalMinusPrefixExpression(right); }
             case "!" -> { return evalBangExpression(right); }
             default -> { return NULL; }
-    }
+        }
     }
 
     private static Entity evalMinusPrefixExpression(Entity right) {
         long val;
-        if (right.Type() == EntityType.INT_OBJ){
+        if (right.Type() == EntityType.INT_OBJ) {
              val = ((Int) right).value();
              return new Int(-1*val);
-             }
+        }
         else return NULL;
     }
 

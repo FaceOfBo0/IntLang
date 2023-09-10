@@ -4,22 +4,7 @@ import Parser.AST.Expression;
 import Token.*;
 import java.util.List;
 
-public class CallExpression implements Expression {
-    Token tok;
-    Expression function;
-    List<Expression> params;
-
-    public CallExpression(Token tok) {
-        this.tok = tok;
-    }
-
-    public void setFnIdent(Expression pFunction) {
-        this.function = pFunction;
-    }
-
-    public void setParams(List<Expression> params) {
-        this.params = params;
-    }
+public record CallExpression(Token tok, Expression function, List<Expression> params) implements Expression {
 
     @Override
     public void expressionNode() { }
@@ -41,7 +26,7 @@ public class CallExpression implements Expression {
 
     @Override
     public String tokenLiteral() {
-        return this.tok.literal;
+        return this.tok.literal();
     }
 
     @Override

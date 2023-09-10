@@ -7,7 +7,7 @@ public record ExpressionStatement(Token tok, Expression value) implements Statem
 
     @Override
     public String tokenLiteral() {
-        return this.tok.literal;
+        return this.tok.literal();
     }
 
     @Override

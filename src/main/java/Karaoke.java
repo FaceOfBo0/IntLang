@@ -46,6 +46,7 @@ public class Karaoke {
             par.getErrors().forEach(System.out::println);
         else {
             eval = Interpreter.eval(prg);
+            System.out.println(prg);
             if (eval != null)
                 System.out.println(eval.Inspect());
         }

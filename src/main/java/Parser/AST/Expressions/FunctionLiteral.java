@@ -7,23 +7,9 @@ import Token.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FunctionLiteral implements Expression {
-    Token tok;
-    List<Identifier> parameters = new ArrayList<>(0);
-    BlockStatement body;
+public record FunctionLiteral(Token tok, List<Identifier> parameters, BlockStatement body) implements Expression {
+
     public static Integer nestLevel = 0;
-
-    public FunctionLiteral(Token tok) {
-        this.tok = tok;
-    }
-
-    public void setParameters(List<Identifier> parameters) {
-        this.parameters = parameters;
-    }
-
-    public void setBody(BlockStatement body) {
-        this.body = body;
-    }
 
     @Override
     public void expressionNode() {
@@ -32,7 +18,7 @@ public class FunctionLiteral implements Expression {
 
     @Override
     public String tokenLiteral() {
-        return this.tok.literal;
+        return this.tok.literal();
     }
 
     @Override

@@ -4,22 +4,11 @@ import Parser.AST.Expression;
 import Parser.AST.Statement;
 import Token.*;
 
-public class ReturnStatement implements Statement {
-    Token tok;
-    Expression value;
-
-    public ReturnStatement(Token pToken){
-        this.tok = pToken;
-        this.value = null;
-    }
-
-    public void setValue(Expression pValue) {
-        this.value = pValue;
-    }
+public record ReturnStatement(Token tok, Expression value) implements Statement {
 
     @Override
     public String tokenLiteral() {
-        return tok.literal;
+        return tok.literal();
     }
 
     @Override

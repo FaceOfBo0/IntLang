@@ -50,8 +50,8 @@ public class Parser {
 
     private void initParseFns(){
         // Identifiers & Integer Literals
-        this.setPrefix(TokenType.IDENT, () -> new Identifier(this.curToken));
-        this.setPrefix(TokenType.INT, () -> new IntegerLiteral(this.curToken, Long.parseLong(this.curToken.literal)));
+        this.setPrefix(TokenType.IDENT, () -> new Identifier(this.curToken, this.curToken.literal()));
+        this.setPrefix(TokenType.INT, () -> new IntegerLiteral(this.curToken, Long.parseLong(this.curToken.literal())));
         // Boolean Literals
         this.setPrefix(TokenType.FALSE, () -> new BooleanLiteral(this.curToken, false));
         this.setPrefix(TokenType.TRUE, () -> new BooleanLiteral(this.curToken, true));
@@ -63,16 +63,16 @@ public class Parser {
                 return null;
             return exp;
         });
-        // Call Expression
+        // --- [Call Expression] ---
         this.setInfix(TokenType.LPAREN, (Expression function) -> {
-            CallExpression callExp = new CallExpression(this.curToken);
-            callExp.setFnIdent(function);
+            Token callTok = this.curToken;
             this.nextToken();
-            callExp.setParams(this.parseCallParameters());
-            return callExp;
+            List<Expression> params = this.parseCallParameters();
+            return new CallExpression(callTok, function, params);
         });
-        // If Expression
+        // --- [If Expression] ---
         this.setPrefix(TokenType.IF, () -> {
+            Token ifToken = this.curToken;
             if (this.expectedPeekNot(TokenType.LPAREN))
                 return null;
             this.nextToken();
@@ -89,36 +89,38 @@ public class Parser {
                     return null;
                 alternative = this.parseBlockStatement();
             }
-            return new IfExpression(this.curToken, condition, consequence, alternative);
+            return new IfExpression(ifToken, condition, consequence, alternative);
         });
-        // Function Expression
+        // --- [Function Expression] ---
         this.setPrefix(TokenType.FUNC, () -> {
-            FunctionLiteral fnExp = new FunctionLiteral(this.curToken);
+            Token fnTok = this.curToken;
             if (this.expectedPeekNot(TokenType.LPAREN))
                 return null;
             this.nextToken();
-            fnExp.setParameters(this.parseFunctionParameters());
+            List<Identifier> params = this.parseFunctionParameters();
             if (this.expectedPeekNot(TokenType.LBRACE))
                 return null;
-            fnExp.setBody(this.parseBlockStatement());
-            return fnExp;
+            BlockStatement body = this.parseBlockStatement();
+            return new FunctionLiteral(fnTok, params, body);
         });
-        // Prefix Expressions
+        // --- [Prefix Expressions] ---
         PrefixParseFn parsePrefixExpr = () -> {
-            String op = this.curToken.literal;
+            Token prefixTok = this.curToken;
+            String op = this.curToken.literal();
             this.nextToken();
-            Expression right =this.parseExpression(Precedence.PREFIX);
-            return new PrefixExpression(this.curToken, op, right);
+            Expression right = this.parseExpression(Precedence.PREFIX);
+            return new PrefixExpression(prefixTok, op, right);
         };
         this.setPrefix(TokenType.MINUS, parsePrefixExpr);
         this.setPrefix(TokenType.BANG, parsePrefixExpr);
-        // Infix Expressions
+        // --- [Infix Expressions] ---
         InfixParseFn parseInfixExpr = (Expression left) -> {
-            String op = this.curToken.literal;
+            Token infixTok = this.curToken;
+            String op = this.curToken.literal();
             Precedence precedence = this.curPrecedence();
             this.nextToken();
             Expression right = this.parseExpression(precedence);
-            return new InfixExpression(this.curToken,left,op,right);
+            return new InfixExpression(infixTok, left, op, right);
         };
         this.setInfix(TokenType.MINUS, parseInfixExpr);
         this.setInfix(TokenType.PLUS, parseInfixExpr);
@@ -149,11 +151,11 @@ public class Parser {
         List<Identifier> idents = new ArrayList<>(0);
         if (this.curTokenIs(TokenType.RPAREN))
             return idents;
-        idents.add(new Identifier(this.curToken));
+        idents.add(new Identifier(this.curToken, this.curToken.literal()));
         while (this.peekTokenIs(TokenType.COMMA)) {
             this.nextToken();
             this.nextToken();
-            idents.add(new Identifier(this.curToken));
+            idents.add(new Identifier(this.curToken, this.curToken.literal()));
         }
         if (this.expectedPeekNot(TokenType.RPAREN))
             return null;
@@ -185,7 +187,7 @@ public class Parser {
     }
 
     private Statement parseStatement(){
-        switch (this.curToken.type){
+        switch (this.curToken.type()){
             case LET -> { return this.parseLetStatement(); }
             case RETURN -> { return this.parseReturnStatement(); }
             default -> { return this.parseExpressionStatement(); }
@@ -205,49 +207,49 @@ public class Parser {
     }
 
     private Statement parseLetStatement() {
-        LetStatement stmt = new LetStatement(this.curToken);
+        Token letTok = this.curToken;
 
         if (this.expectedPeekNot(TokenType.IDENT)) {
             return null;
         }
 
-        stmt.setName(new Identifier(this.curToken));
+        Identifier name = new Identifier(this.curToken, this.curToken.literal());
 
         if (this.expectedPeekNot(TokenType.ASSIGN)) {
             return null;
         }
         this.nextToken();
 
-        stmt.setValue(this.parseExpression(Precedence.LOWEST));
+        Expression value = this.parseExpression(Precedence.LOWEST);
 
         if(this.peekTokenIs(TokenType.SEMICOL))
             this.nextToken();
 
-        return stmt;
+        return new LetStatement(letTok, name, value);
     }
 
     private Statement parseReturnStatement() {
-        ReturnStatement stmt = new ReturnStatement(curToken);
+        Token returnTok = this.curToken;
         this.nextToken();
 
-        stmt.setValue(this.parseExpression(Precedence.LOWEST));
+        Expression value = this.parseExpression(Precedence.LOWEST);
 
         if(this.peekTokenIs(TokenType.SEMICOL))
             this.nextToken();
 
-        return stmt;
+        return new ReturnStatement(returnTok, value);
     }
 
     private Expression parseExpression(Precedence precedence) {
-        PrefixParseFn prefix = this.prefixParseMap.get(this.curToken.type);
+        PrefixParseFn prefix = this.prefixParseMap.get(this.curToken.type());
         if (prefix == null) {
-            this.noPrefixParseFnError(this.curToken.type);
+            this.noPrefixParseFnError(this.curToken.type());
             return null;
         }
         Expression leftExp = prefix.parse();
 
         while(!this.peekTokenIs(TokenType.SEMICOL) && precedence.ordinal() < this.peekPrecedence().ordinal()) {
-            InfixParseFn infix = this.infixParseMap.get(this.peekToken.type);
+            InfixParseFn infix = this.infixParseMap.get(this.peekToken.type());
             if (infix == null)
                 return null;
             this.nextToken();
@@ -272,7 +274,7 @@ public class Parser {
     }
 
     private boolean expectedPeekNot(TokenType pType) {
-        if (this.peekToken.type == pType) {
+        if (this.peekToken.type() == pType) {
             this.nextToken();
             return false;
         }
@@ -283,25 +285,25 @@ public class Parser {
     }
 
     private Precedence peekPrecedence() {
-        return this.precedences.getOrDefault(this.peekToken.type, Precedence.LOWEST);
+        return this.precedences.getOrDefault(this.peekToken.type(), Precedence.LOWEST);
     }
 
     private Precedence curPrecedence() {
-        return this.precedences.getOrDefault(this.curToken.type, Precedence.LOWEST);
+        return this.precedences.getOrDefault(this.curToken.type(), Precedence.LOWEST);
     }
 
     private boolean peekTokenIs(TokenType pType) {
-        return this.peekToken.type == pType;
+        return this.peekToken.type() == pType;
     }
 
-    private boolean curTokenIs(TokenType pType) { return this.curToken.type == pType; }
+    private boolean curTokenIs(TokenType pType) { return this.curToken.type() == pType; }
 
     private void noPrefixParseFnError(TokenType pTokenType) {
         this.errors.add("no prefix parse function for "+ pTokenType + "found");
     }
 
     private void peekError(TokenType pType) {
-        this.errors.add("Parse Error: Expected next Token to be "+ pType +", got "+ this.peekToken.type +" instead!");
+        this.errors.add("Parse Error: Expected next Token to be "+ pType +", got "+ this.peekToken.type() +" instead!");
     }
 
     public List<String> getErrors(){ return this.errors; }
