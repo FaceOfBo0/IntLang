@@ -9,6 +9,8 @@ import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.util.*;
 
+import static Interpreter.Interpreter.NULL;
+
 public class Karaoke {
     public static void main(String[] args) throws IOException {
         if (args.length > 1) {
@@ -22,22 +24,24 @@ public class Karaoke {
     }
 
     private static void runFile(String path) throws IOException {
+        Environment env = new Environment();
         byte[] bytes = Files.readAllBytes(Paths.get(path));
-        run(new String(bytes, Charset.defaultCharset()));
+        run(new String(bytes, Charset.defaultCharset()), env);
     }
 
     private static void runPrompt() throws IOException {
         InputStreamReader input = new InputStreamReader(System.in);
         BufferedReader reader = new BufferedReader(input);
+        Environment env = new Environment();
         for (;;) {
             System.out.print(">> ");
             String line = reader.readLine();
             if (Objects.equals(line, "")) break;
-            run(line);
+            run(line, env);
         }
     }
 
-    private static void run(String source) {
+    private static void run(String source, Environment env) {
         Lexer scanner = new Lexer(source);
         Parser par = new Parser(scanner);
         Program prg = par.parseProgram();
@@ -45,9 +49,9 @@ public class Karaoke {
         if (!par.getErrors().isEmpty())
             par.getErrors().forEach(System.out::println);
         else {
-            eval = Interpreter.eval(prg);
-            System.out.println(prg);
-            if (eval != null)
+            eval = Interpreter.eval(prg, env);
+            // System.out.println(prg);
+            if (eval != NULL)
                 System.out.println(eval.Inspect());
         }
     }

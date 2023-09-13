@@ -8,6 +8,6 @@ public class Null implements Entity {
 
     @Override
     public String Inspect() {
-        return "null";
+        return "NULL";
     }
 }

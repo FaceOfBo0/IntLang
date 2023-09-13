@@ -251,7 +251,7 @@ public class Parser {
         while(!this.peekTokenIs(TokenType.SEMICOL) && precedence.ordinal() < this.peekPrecedence().ordinal()) {
             InfixParseFn infix = this.infixParseMap.get(this.peekToken.type());
             if (infix == null)
-                return null;
+                return leftExp;
             this.nextToken();
             leftExp = infix.parse(leftExp);
         }
@@ -299,11 +299,11 @@ public class Parser {
     private boolean curTokenIs(TokenType pType) { return this.curToken.type() == pType; }
 
     private void noPrefixParseFnError(TokenType pTokenType) {
-        this.errors.add("no prefix parse function for "+ pTokenType + "found");
+        this.errors.add("PARSE ERROR: no prefix parse function for "+ pTokenType + " found");
     }
 
     private void peekError(TokenType pType) {
-        this.errors.add("Parse Error: Expected next Token to be "+ pType +", got "+ this.peekToken.type() +" instead!");
+        this.errors.add("PARSE ERROR: Expected next Token to be " + pType + ", got "+ this.peekToken.type() + " instead!");
     }
 
     public List<String> getErrors(){ return this.errors; }
