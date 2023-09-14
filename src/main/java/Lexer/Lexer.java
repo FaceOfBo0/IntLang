@@ -11,6 +11,7 @@ public class Lexer {
     public char curChar;
     public int readPos = 0;
     public int curPos = 0;
+    public  List<Token> tokens = new ArrayList<>(0);
 
     public Lexer (String source) {
         this.source = source;
@@ -86,8 +87,29 @@ public class Lexer {
                 }
                 else tok = new Token(TokenType.BANG, String.valueOf(this.curChar));
             }
-            case '<' -> tok = new Token(TokenType.LESS, String.valueOf(this.curChar));
-            case '>' -> tok = new Token(TokenType.GREATER, String.valueOf(this.curChar));
+            case '<' -> {
+                if (this.peekChar() == '=') {
+                    this.readChar();
+                    tok = new Token(TokenType.LESS_EQ, "<=");
+                }
+                else tok = new Token(TokenType.LESS, String.valueOf(this.curChar));
+            }
+            case '>' -> {
+                if (this.peekChar() == '=') {
+                    this.readChar();
+                    tok = new Token(TokenType.GREATER_EQ, ">=");
+                }
+                else tok = new Token(TokenType.GREATER, String.valueOf(this.curChar));
+            }
+            case '"' -> {
+                StringBuilder result = new StringBuilder();
+                while (this.peekChar() != '"') {
+                    this.readChar();
+                    result.append(this.curChar);
+                }
+                this.readChar();
+                tok = new Token(TokenType.STRING, result.toString());
+            }
             case ';' -> tok = new Token(TokenType.SEMICOL, String.valueOf(this.curChar));
             case ',' -> tok = new Token(TokenType.COMMA, String.valueOf(this.curChar));
             case '(' -> tok = new Token(TokenType.LPAREN, String.valueOf(this.curChar));
@@ -122,14 +144,14 @@ public class Lexer {
         this.readChar();
         return tok;
     }
+    public List<Token> tokenize() {
+        Token tok = new Token(TokenType.ILLEGAL);
+        while (!(tok.type() == TokenType.EOF)) {
+            tok = this.nextToken();
+            tokens.add(tok);
+        }
+        return this.tokens;
+    }
 }
 
-//public  List<Token> tokens = new ArrayList<>(0);
-//    public List<Token> tokenize() {
-//        Token tok = new Token(TokenType.ILLEGAL);
-//        while (!(tok.type == TokenType.EOF)) {
-//            tok = this.nextToken();
-//            tokens.add(tok);
-//        }
-//        return this.tokens;
-//    }
+
