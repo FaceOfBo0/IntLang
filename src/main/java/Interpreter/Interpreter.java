@@ -38,6 +38,9 @@ public abstract class Interpreter {
         // Boolean Literals
         else if (pNode.getClass().equals(BooleanLiteral.class))
             return getBoolObject(((BooleanLiteral) pNode).value());
+        // String Literals
+        else if (pNode.getClass()== StringLiteral.class)
+            return new Str(((StringLiteral) pNode).value());
         // Prefix Expressions
         else if (pNode.getClass() == PrefixExpression.class) {
             Entity right = eval(((PrefixExpression) pNode).right(), env);

@@ -37,10 +37,11 @@ public class Karaoke {
             System.out.print(">> ");
             String line = reader.readLine();
             if (Objects.equals(line, "")) break;
-            //run(line, env);
-            // Lexer Debug Code
-            Lexer scan = new Lexer(line);
-            System.out.println(scan.tokenize());
+            run(line, env);
+            /* Lexer Debug Code */
+//            Lexer scan = new Lexer(line);
+//            System.out.println(scan.tokenize());
+
         }
     }
 
@@ -52,8 +53,8 @@ public class Karaoke {
         if (!par.getErrors().isEmpty())
             par.getErrors().forEach(System.out::println);
         else {
+//            System.out.println(prg);
             eval = Interpreter.eval(prg, env);
-            // System.out.println(prg);
             if (eval != NULL)
                 System.out.println(eval.Inspect());
         }

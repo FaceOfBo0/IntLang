@@ -52,6 +52,8 @@ public class Parser {
         // Identifiers & Integer Literals
         this.setPrefix(TokenType.IDENT, () -> new Identifier(this.curToken, this.curToken.literal()));
         this.setPrefix(TokenType.INT, () -> new IntegerLiteral(this.curToken, Long.parseLong(this.curToken.literal())));
+        // String Literals
+        this.setPrefix(TokenType.STRING, () -> new StringLiteral(this.curToken, this.curToken.literal()));
         // Boolean Literals
         this.setPrefix(TokenType.FALSE, () -> new BooleanLiteral(this.curToken, false));
         this.setPrefix(TokenType.TRUE, () -> new BooleanLiteral(this.curToken, true));

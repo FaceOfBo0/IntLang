@@ -8,6 +8,6 @@ public record Token(TokenType type, String literal) {
 
    @Override
     public String toString() {
-        return "Token:{" + this.type + ", '" + this.literal + "'}";
+        return "Token:{" + this.type + ", \"" + this.literal + "\"}";
     }
 }
