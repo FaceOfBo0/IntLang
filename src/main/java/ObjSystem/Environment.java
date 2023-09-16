@@ -20,8 +20,7 @@ public class Environment {
         return result;
     }
 
-    public Entity set(String key, Entity value) {
+    public void set(String key, Entity value) {
         this.store.put(key, value);
-        return value;
     }
 }

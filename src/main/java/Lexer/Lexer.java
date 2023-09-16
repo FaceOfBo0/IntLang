@@ -103,7 +103,7 @@ public class Lexer {
             }
             case '"' -> {
                 StringBuilder result = new StringBuilder();
-                while (this.peekChar() != '"') {
+                while (this.peekChar() != '"' && this.peekChar() != 0) {
                     this.readChar();
                     result.append(this.curChar);
                 }

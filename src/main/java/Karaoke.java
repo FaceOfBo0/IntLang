@@ -41,7 +41,6 @@ public class Karaoke {
             /* Lexer Debug Code */
 //            Lexer scan = new Lexer(line);
 //            System.out.println(scan.tokenize());
-
         }
     }
 
@@ -53,6 +52,7 @@ public class Karaoke {
         if (!par.getErrors().isEmpty())
             par.getErrors().forEach(System.out::println);
         else {
+            /*Parser Debug Code*/
 //            System.out.println(prg);
             eval = Interpreter.eval(prg, env);
             if (eval != NULL)
