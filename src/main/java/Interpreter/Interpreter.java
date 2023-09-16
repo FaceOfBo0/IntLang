@@ -170,6 +170,8 @@ public abstract class Interpreter {
     private static Entity evalInfixExpression(String op, Entity left, Entity right) {
         if (left.Type() == EntityType.INT_OBJ && right.Type() == EntityType.INT_OBJ)
             return parseIntegerInfixExpression(op, left, right);
+        if (left.Type() == EntityType.STRING_OBJ && right.Type() == EntityType.STRING_OBJ)
+            return parseStringInfixExpression(op, left, right);
         else if (Objects.equals(op, "!="))
             return getBoolObject(left != right);
         else if (Objects.equals(op, "=="))
@@ -178,6 +180,15 @@ public abstract class Interpreter {
             return newError("type mismatch: %s %s %s", left.Type(), op, right.Type());
         else
             return newError("unknown operator: %s %s %s", left.Type(), op, right.Type());
+    }
+
+    private static Entity parseStringInfixExpression(String op, Entity left, Entity right) {
+        String leftVal = ((Str) left).value();
+        String rightVal = ((Str) right).value();
+        switch (op) {
+            case "+" -> { return new Str(leftVal + rightVal); }
+            default -> { return newError("unknown operator: %s %s %s", left.Type(), op, right.Type()); }
+        }
     }
 
     private static Entity parseIntegerInfixExpression(String op, Entity left, Entity right) {
