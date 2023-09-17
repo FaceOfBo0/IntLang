@@ -5,15 +5,21 @@ import Parser.AST.Statements.*;
 import Parser.AST.*;
 import ObjSystem.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public abstract class Interpreter {
 
     public static Null NULL = new Null();
     static Bool TRUE = new Bool(true);
     static Bool FALSE = new Bool(false);
+    static Map<String, BuiltIn> builtins = new HashMap<>(
+            Map.of("len", new BuiltIn((Entity... args) -> {
+            if (args.length == 1) {
+                if (args[0].Type() == EntityType.STRING_OBJ)
+                    return new Int(args[0].Inspect().length());
+                else return newError("wrong type of argument for 'len'; got: %s, want: STRING", args[0].Type());
+            }
+            return newError("wrong number of arguments; got: %d, want: 1",args.length);})));
 
     public static Entity eval(Node pNode, Environment env) {
         // Whole program
@@ -97,12 +103,15 @@ public abstract class Interpreter {
     }
 
     private static Entity evalFunction(Entity func, List<Entity> args) {
-        if (func.getClass() != Function.class)
-            return newError("not a function: %s", func.Type());
-        Environment extendedEnv = extendedFunctionEnv(func, args);
-        Entity evalBody = eval(((Function) func).body(), extendedEnv);
-        assert evalBody != null;
-        return unwrapReturnVal(evalBody);
+        if (func.getClass() == BuiltIn.class)
+            return ((BuiltIn) func).fn().parse(args.toArray(new Entity[0]));
+        else if (func.getClass() == Function.class) {
+            Environment extendedEnv = extendedFunctionEnv(func, args);
+            Entity evalBody = eval(((Function) func).body(), extendedEnv);
+            assert evalBody != null;
+            return unwrapReturnVal(evalBody);
+        }
+        else return newError("not a function: %s", func.Type());
     }
 
     private static Entity unwrapReturnVal(Entity obj) {
@@ -136,6 +145,9 @@ public abstract class Interpreter {
 
     private static Entity evalIdentifier(Node pNode, Environment env) {
         Entity result = env.get(((Identifier) pNode).value());
+        if (result != NULL)
+            return result;
+        result = builtins.get(((Identifier) pNode).value());
         if (result != NULL)
             return result;
         return newError("Identifier not found: %s", ((Identifier) pNode).value());

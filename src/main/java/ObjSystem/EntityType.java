@@ -7,7 +7,8 @@ public enum EntityType {
     RETURN_VALUE_OBJ,
     ERROR_OBJ,
     FUNCTION_OBJ,
-    STRING_OBJ;
+    STRING_OBJ,
+    BUILTIN_OBJ;
 
     @Override
     public String toString() {
@@ -19,6 +20,7 @@ public enum EntityType {
             case NULL_OBJ -> {return "NULL";}
             case FUNCTION_OBJ -> {return "FUNCTION"; }
             case STRING_OBJ -> {return "STRING"; }
+            case BUILTIN_OBJ -> {return "BUILTIN"; }
         }
         return "";
     }
