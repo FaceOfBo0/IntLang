@@ -1,4 +1,4 @@
-package ObjSystem;
+package Interpreter.ObjSystem;
 
 public record BuiltIn(BuiltInFunction fn) implements Entity {
 

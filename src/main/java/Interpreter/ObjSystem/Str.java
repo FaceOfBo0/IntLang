@@ -1,4 +1,4 @@
-package ObjSystem;
+package Interpreter.ObjSystem;
 
 public record Str(String value) implements Entity {
     @Override

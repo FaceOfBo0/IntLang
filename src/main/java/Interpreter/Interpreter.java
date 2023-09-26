@@ -1,9 +1,9 @@
 package Interpreter;
 
+import Interpreter.ObjSystem.*;
 import Parser.AST.Expressions.*;
 import Parser.AST.Statements.*;
 import Parser.AST.*;
-import ObjSystem.*;
 
 import java.util.*;
 

@@ -1,4 +1,4 @@
-package ObjSystem;
+package Interpreter.ObjSystem;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,5 @@
-import ObjSystem.*;
+import Interpreter.ObjSystem.Entity;
+import Interpreter.ObjSystem.Environment;
 import Interpreter.*;
 import Lexer.*;
 import Parser.AST.Program;

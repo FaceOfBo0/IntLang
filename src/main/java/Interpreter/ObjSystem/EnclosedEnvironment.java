@@ -1,4 +1,4 @@
-package ObjSystem;
+package Interpreter.ObjSystem;
 
 public class EnclosedEnvironment extends Environment {
 

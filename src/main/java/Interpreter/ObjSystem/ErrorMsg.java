@@ -1,4 +1,4 @@
-package ObjSystem;
+package Interpreter.ObjSystem;
 
 public record ErrorMsg(String message) implements Entity {
     @Override

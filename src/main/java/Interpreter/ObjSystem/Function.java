@@ -1,4 +1,4 @@
-package ObjSystem;
+package Interpreter.ObjSystem;
 
 import Parser.AST.Expressions.Identifier;
 import Parser.AST.Statements.BlockStatement;
