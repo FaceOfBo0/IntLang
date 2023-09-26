@@ -12,21 +12,15 @@ public abstract class Interpreter {
     public static Null NULL = new Null();
     static Bool TRUE = new Bool(true);
     static Bool FALSE = new Bool(false);
-    static Map<String, BuiltIn> builtins = new HashMap<>(
-            Map.of("len", new BuiltIn((Entity... args) -> {
-            if (args.length == 1) {
-                if (args[0].Type() == EntityType.STRING_OBJ)
-                    return new Int(args[0].Inspect().length());
-                else return newError("wrong type of argument for 'len'; got: %s, want: STRING", args[0].Type());
-            }
-            return newError("wrong number of arguments; got: %d, want: 1",args.length);})));
+    static Map<String, Entity> builtins = new HashMap<>(0);
 
     public static Entity eval(Node pNode, Environment env) {
+        initBuiltIns();
         // Whole program
-        if (pNode.getClass().equals(Program.class))
+        if (pNode.getClass() == Program.class)
             return evalProgram(((Program) pNode).getStatements(), env);
         // Expression statements
-        else if (pNode.getClass().equals(ExpressionStatement.class))
+        else if (pNode.getClass() == ExpressionStatement.class)
             return eval(((ExpressionStatement) pNode).value(), env);
         // Block statements
         else if (pNode.getClass() == BlockStatement.class)
@@ -39,13 +33,13 @@ public abstract class Interpreter {
             return new ReturnValue(val);
         }
         // Integer Literals
-        else if (pNode.getClass().equals(IntegerLiteral.class))
+        else if (pNode.getClass() == IntegerLiteral.class)
             return new Int(((IntegerLiteral) pNode).value());
         // Boolean Literals
-        else if (pNode.getClass().equals(BooleanLiteral.class))
+        else if (pNode.getClass() == BooleanLiteral.class)
             return getBoolObject(((BooleanLiteral) pNode).value());
         // String Literals
-        else if (pNode.getClass()== StringLiteral.class)
+        else if (pNode.getClass() == StringLiteral.class)
             return new Str(((StringLiteral) pNode).value());
         // Prefix Expressions
         else if (pNode.getClass() == PrefixExpression.class) {
@@ -102,6 +96,18 @@ public abstract class Interpreter {
         return NULL;
     }
 
+    private static void initBuiltIns() {
+        BuiltInFunction lenBuiltInFn = (Entity... args) -> {
+            if (args.length == 1) {
+                if (args[0].Type() == EntityType.STRING_OBJ)
+                    return new Int(args[0].Inspect().length());
+                else return newError("wrong type of argument for 'len'; got: %s, want: STRING", args[0].Type());
+            }
+            return newError("wrong number of arguments; got: %d, want: 1",args.length);
+        };
+        builtins.put("len", new BuiltIn(lenBuiltInFn));
+    }
+
     private static Entity evalFunction(Entity func, List<Entity> args) {
         if (func.getClass() == BuiltIn.class)
             return ((BuiltIn) func).fn().parse(args.toArray(new Entity[0]));
@@ -147,7 +153,7 @@ public abstract class Interpreter {
         Entity result = env.get(((Identifier) pNode).value());
         if (result != NULL)
             return result;
-        result = builtins.get(((Identifier) pNode).value());
+        result = builtins.getOrDefault(((Identifier) pNode).value(), NULL);
         if (result != NULL)
             return result;
         return newError("Identifier not found: %s", ((Identifier) pNode).value());
@@ -181,9 +187,9 @@ public abstract class Interpreter {
 
     private static Entity evalInfixExpression(String op, Entity left, Entity right) {
         if (left.Type() == EntityType.INT_OBJ && right.Type() == EntityType.INT_OBJ)
-            return parseIntegerInfixExpression(op, left, right);
+            return evalIntegerInfixExpression(op, left, right);
         if (left.Type() == EntityType.STRING_OBJ && right.Type() == EntityType.STRING_OBJ)
-            return parseStringInfixExpression(op, left, right);
+            return evalStringInfixExpression(op, left, right);
         else if (Objects.equals(op, "!="))
             return getBoolObject(left != right);
         else if (Objects.equals(op, "=="))
@@ -194,7 +200,7 @@ public abstract class Interpreter {
             return newError("unknown operator: %s %s %s", left.Type(), op, right.Type());
     }
 
-    private static Entity parseStringInfixExpression(String op, Entity left, Entity right) {
+    private static Entity evalStringInfixExpression(String op, Entity left, Entity right) {
         String leftVal = ((Str) left).value();
         String rightVal = ((Str) right).value();
         switch (op) {
@@ -203,7 +209,7 @@ public abstract class Interpreter {
         }
     }
 
-    private static Entity parseIntegerInfixExpression(String op, Entity left, Entity right) {
+    private static Entity evalIntegerInfixExpression(String op, Entity left, Entity right) {
         long leftVal = ((Int) left).value();
         long rightVal = ((Int) right).value();
         switch (op) {

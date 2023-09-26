@@ -4,7 +4,6 @@ import Parser.AST.Expression;
 import Parser.AST.Statements.BlockStatement;
 import Token.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public record FunctionLiteral(Token tok, List<Identifier> parameters, BlockStatement body) implements Expression {
