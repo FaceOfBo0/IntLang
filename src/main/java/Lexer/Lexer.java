@@ -116,6 +116,8 @@ public class Lexer {
             case ')' -> tok = new Token(TokenType.RPAREN, String.valueOf(this.curChar));
             case '{' -> tok = new Token(TokenType.LBRACE, String.valueOf(this.curChar));
             case '}' -> tok = new Token(TokenType.RBRACE, String.valueOf(this.curChar));
+            case '[' -> tok = new Token(TokenType.LBRACKET, String.valueOf(this.curChar));
+            case ']' -> tok = new Token(TokenType.RBRACKET, String.valueOf(this.curChar));
             case '+' -> tok = new Token(TokenType.PLUS, String.valueOf(this.curChar));
             case '-' -> tok = new Token(TokenType.MINUS, String.valueOf(this.curChar));
             case '*' -> tok = new Token(TokenType.ASTERISK, String.valueOf(this.curChar));
