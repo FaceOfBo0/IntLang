@@ -1,14 +1,13 @@
 package Interpreter.ObjSystem;
 
-public record Int(long value) implements Entity {
-
+public record StringObj(String value) implements Entity {
     @Override
     public EntityType Type() {
-        return EntityType.INT_OBJ;
+        return EntityType.STRING_OBJ;
     }
 
     @Override
     public String Inspect() {
-        return String.valueOf(this.value);
+        return this.value;
     }
 }

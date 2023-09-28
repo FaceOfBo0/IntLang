@@ -34,13 +34,13 @@ public abstract class Interpreter {
         }
         // Integer Literals
         else if (pNode.getClass() == IntegerLiteral.class)
-            return new Int(((IntegerLiteral) pNode).value());
+            return new IntegerObj(((IntegerLiteral) pNode).value());
         // Boolean Literals
         else if (pNode.getClass() == BooleanLiteral.class)
             return getBoolObject(((BooleanLiteral) pNode).value());
         // String Literals
         else if (pNode.getClass() == StringLiteral.class)
-            return new Str(((StringLiteral) pNode).value());
+            return new StringObj(((StringLiteral) pNode).value());
         // Prefix Expressions
         else if (pNode.getClass() == PrefixExpression.class) {
             Entity right = eval(((PrefixExpression) pNode).right(), env);
@@ -100,7 +100,7 @@ public abstract class Interpreter {
         BuiltInFunction lenBuiltInFn = (Entity... args) -> {
             if (args.length == 1) {
                 if (args[0].Type() == EntityType.STRING_OBJ)
-                    return new Int(args[0].Inspect().length());
+                    return new IntegerObj(args[0].Inspect().length());
                 else return newError("wrong type of argument for 'len'; got: %s, want: STRING", args[0].Type());
             }
             return newError("wrong number of arguments; got: %d, want: 1",args.length);
@@ -201,22 +201,22 @@ public abstract class Interpreter {
     }
 
     private static Entity evalStringInfixExpression(String op, Entity left, Entity right) {
-        String leftVal = ((Str) left).value();
-        String rightVal = ((Str) right).value();
+        String leftVal = ((StringObj) left).value();
+        String rightVal = ((StringObj) right).value();
         switch (op) {
-            case "+" -> { return new Str(leftVal + rightVal); }
+            case "+" -> { return new StringObj(leftVal + rightVal); }
             default -> { return newError("unknown operator: %s %s %s", left.Type(), op, right.Type()); }
         }
     }
 
     private static Entity evalIntegerInfixExpression(String op, Entity left, Entity right) {
-        long leftVal = ((Int) left).value();
-        long rightVal = ((Int) right).value();
+        long leftVal = ((IntegerObj) left).value();
+        long rightVal = ((IntegerObj) right).value();
         switch (op) {
-            case "+" -> {return new Int(leftVal + rightVal);}
-            case "-" -> {return new Int(leftVal - rightVal);}
-            case "*" -> {return new Int(leftVal * rightVal);}
-            case "/" -> {return new Int(leftVal / rightVal);}
+            case "+" -> {return new IntegerObj(leftVal + rightVal);}
+            case "-" -> {return new IntegerObj(leftVal - rightVal);}
+            case "*" -> {return new IntegerObj(leftVal * rightVal);}
+            case "/" -> {return new IntegerObj(leftVal / rightVal);}
             case "<" -> {return getBoolObject(leftVal < rightVal);}
             case ">" -> {return getBoolObject(leftVal > rightVal);}
             case "!=" -> {return getBoolObject(leftVal != rightVal);}
@@ -238,8 +238,8 @@ public abstract class Interpreter {
             return newError("unknown operator: -%s", right.Type());
         long val;
         if (right.Type() == EntityType.INT_OBJ) {
-             val = ((Int) right).value();
-             return new Int(-1*val);
+             val = ((IntegerObj) right).value();
+             return new IntegerObj(-1*val);
         }
         else return NULL;
     }

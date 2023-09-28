@@ -49,15 +49,26 @@ public class Parser {
     }
 
     private void initParseFns(){
-        // Identifiers & Integer Literals
+        // --- [Identifiers & Integer Literals] ---
         this.setPrefix(TokenType.IDENT, () -> new Identifier(this.curToken, this.curToken.literal()));
         this.setPrefix(TokenType.INT, () -> new IntegerLiteral(this.curToken, Long.parseLong(this.curToken.literal())));
-        // String Literals
+
+        // --- [String Literals] ---
         this.setPrefix(TokenType.STRING, () -> new StringLiteral(this.curToken, this.curToken.literal()));
-        // Boolean Literals
+
+        // --- [Boolean Literals] ---
         this.setPrefix(TokenType.FALSE, () -> new BooleanLiteral(this.curToken, false));
         this.setPrefix(TokenType.TRUE, () -> new BooleanLiteral(this.curToken, true));
-        // Grouped Expressions
+
+        // --- [Array Literals] ---
+        this.setPrefix(TokenType.LBRACKET, () -> {
+            Token arrayTok = this.curToken;
+            this.nextToken();
+            List<Expression> arrayItems = this.parseExpressionList(TokenType.RBRACKET);
+            return new ArrayLiteral(arrayTok, arrayItems);
+        });
+
+        // --- [Grouped Expressions] ---
         this.setPrefix(TokenType.LPAREN, () -> {
             this.nextToken();
             Expression exp = this.parseExpression(Precedence.LOWEST);
@@ -65,14 +76,16 @@ public class Parser {
                 return null;
             return exp;
         });
-        // --- [Call Expression] ---
+
+        // --- [Call Expressions] ---
         this.setInfix(TokenType.LPAREN, (Expression function) -> {
             Token callTok = this.curToken;
             this.nextToken();
-            List<Expression> params = this.parseCallParameters();
+            List<Expression> params = this.parseExpressionList(TokenType.RPAREN);
             return new CallExpression(callTok, function, params);
         });
-        // --- [If Expression] ---
+
+        // --- [If Expressions] ---
         this.setPrefix(TokenType.IF, () -> {
             Token ifToken = this.curToken;
             if (this.expectedPeekNot(TokenType.LPAREN))
@@ -93,7 +106,8 @@ public class Parser {
             }
             return new IfExpression(ifToken, condition, consequence, alternative);
         });
-        // --- [Function Expression] ---
+
+        // --- [Function Expressions] ---
         this.setPrefix(TokenType.FUNC, () -> {
             Token fnTok = this.curToken;
             if (this.expectedPeekNot(TokenType.LPAREN))
@@ -105,6 +119,7 @@ public class Parser {
             BlockStatement body = this.parseBlockStatement();
             return new FunctionLiteral(fnTok, params, body);
         });
+
         // --- [Prefix Expressions] ---
         PrefixParseFn parsePrefixExpr = () -> {
             Token prefixTok = this.curToken;
@@ -115,6 +130,7 @@ public class Parser {
         };
         this.setPrefix(TokenType.MINUS, parsePrefixExpr);
         this.setPrefix(TokenType.BANG, parsePrefixExpr);
+
         // --- [Infix Expressions] ---
         InfixParseFn parseInfixExpr = (Expression left) -> {
             Token infixTok = this.curToken;
@@ -134,9 +150,9 @@ public class Parser {
         this.setInfix(TokenType.BANG_EQ, parseInfixExpr);
     }
 
-    private List<Expression> parseCallParameters() {
+    private List<Expression> parseExpressionList(TokenType delimiter) {
         List<Expression> exprs = new ArrayList<>(0);
-        if (this.curTokenIs(TokenType.RPAREN))
+        if (this.curTokenIs(delimiter))
             return exprs;
         exprs.add(this.parseExpression(Precedence.LOWEST));
         while (this.peekTokenIs(TokenType.COMMA)) {
@@ -144,7 +160,7 @@ public class Parser {
             this.nextToken();
             exprs.add(this.parseExpression(Precedence.LOWEST));
         }
-        if (this.expectedPeekNot(TokenType.RPAREN))
+        if (this.expectedPeekNot(delimiter))
             return null;
         return exprs;
     }
