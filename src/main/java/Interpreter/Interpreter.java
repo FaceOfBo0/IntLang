@@ -16,15 +16,19 @@ public abstract class Interpreter {
 
     public static Entity eval(Node pNode, Environment env) {
         initBuiltIns();
+
         // Whole program
         if (pNode.getClass() == Program.class)
             return evalProgram(((Program) pNode).getStatements(), env);
+
         // Expression statements
         else if (pNode.getClass() == ExpressionStatement.class)
             return eval(((ExpressionStatement) pNode).value(), env);
+
         // Block statements
         else if (pNode.getClass() == BlockStatement.class)
             return evalBlockStatement((BlockStatement) pNode, env);
+
         // Return statements
         else if (pNode.getClass() == ReturnStatement.class) {
             Entity val = eval(((ReturnStatement) pNode).value(), env);
@@ -32,15 +36,42 @@ public abstract class Interpreter {
                 return val;
             return new ReturnValue(val);
         }
+
         // Integer Literals
         else if (pNode.getClass() == IntegerLiteral.class)
             return new IntegerObj(((IntegerLiteral) pNode).value());
+
         // Boolean Literals
         else if (pNode.getClass() == BooleanLiteral.class)
             return getBoolObject(((BooleanLiteral) pNode).value());
+
         // String Literals
         else if (pNode.getClass() == StringLiteral.class)
             return new StringObj(((StringLiteral) pNode).value());
+
+        // Array Literals
+        else if (pNode.getClass() == ArrayLiteral.class) {
+            List<Entity> elements = evalExpressions(((ArrayLiteral) pNode).elements(), env);
+            if (elements.size() == 1 && isError(elements.get(0)))
+                return elements.get(0);
+            return new ArrayObj(elements);
+        }
+
+        // Index Expressions
+        else if (pNode.getClass() == IndexExpression.class) {
+            Entity left = eval(((IndexExpression) pNode).left(), env);
+            if (isError(left))
+                return left;
+            if (left.Type() != EntityType.ARRAY_OBJ)
+                return newError("[] can't be used on that type - expected: ARRAY, got: %s", left.Type());
+            Entity index = eval(((IndexExpression) pNode).index(), env);
+            if (isError(index))
+                return index;
+            if(index.Type() != EntityType.INT_OBJ)
+                return newError("Type mismatch on index value - expected: INT, got %s", index.Type());
+            return evalIndexExpression(left, index);
+        }
+
         // Prefix Expressions
         else if (pNode.getClass() == PrefixExpression.class) {
             Entity right = eval(((PrefixExpression) pNode).right(), env);
@@ -76,6 +107,7 @@ public abstract class Interpreter {
         // Identifiers
         else if (pNode.getClass() == Identifier.class)
             return evalIdentifier(pNode, env);
+
         // Function Literals
         else if (pNode.getClass() == FunctionLiteral.class){
             List<Identifier> params = ((FunctionLiteral) pNode).parameters();
@@ -87,7 +119,7 @@ public abstract class Interpreter {
             Entity func = eval(((CallExpression) pNode).function(), env);
             if (isError(func))
                 return func;
-            List<Entity> args = evalArguments(((CallExpression) pNode).params(), env);
+            List<Entity> args = evalExpressions(((CallExpression) pNode).params(), env);
             if (args.size() == 1 && isError(args.get(0)))
                 return args.get(0);
             return evalFunction(func, args);
@@ -97,15 +129,30 @@ public abstract class Interpreter {
     }
 
     private static void initBuiltIns() {
+        // len() for Strings and Arrays
         BuiltInFunction lenBuiltInFn = (Entity... args) -> {
             if (args.length == 1) {
                 if (args[0].Type() == EntityType.STRING_OBJ)
                     return new IntegerObj(args[0].Inspect().length());
-                else return newError("wrong type of argument for 'len'; got: %s, want: STRING", args[0].Type());
+                else if (args[0].Type() == EntityType.ARRAY_OBJ)
+                    return new IntegerObj(((ArrayObj)args[0]).value().size());
+                else return newError("wrong type of argument for 'len'; expected: STRING, got: %s", args[0].Type());
             }
             return newError("wrong number of arguments; got: %d, want: 1",args.length);
         };
         builtins.put("len", new BuiltIn(lenBuiltInFn));
+        // first() for Arrays
+
+    }
+
+    private static Entity evalIndexExpression(Entity left, Entity index) {
+        assert left.Type() == EntityType.ARRAY_OBJ;
+        assert index.Type() == EntityType.INT_OBJ;
+        var indexInt = ((IntegerObj) index).value();
+        var maxIndex = ((ArrayObj) left).value().size() - 1;
+        if (indexInt > maxIndex)
+            return newError("IndexOutOfBounds - max index: %s, got: %s",maxIndex, indexInt);
+        return ((ArrayObj) left).value().get(indexInt);
     }
 
     private static Entity evalFunction(Entity func, List<Entity> args) {
@@ -137,16 +184,16 @@ public abstract class Interpreter {
         return newEnv;
     }
 
-    private static List<Entity> evalArguments(List<Expression> params, Environment env) {
-        List<Entity> arguments = new ArrayList<>(0);
+    private static List<Entity> evalExpressions(List<Expression> params, Environment env) {
+        List<Entity> expressions = new ArrayList<>(0);
         for (Expression arg: params) {
             Entity result = eval(arg, env);
             if (isError(result)){
                 return new ArrayList<>(List.of(result));
             }
-            arguments.add(result);
+            expressions.add(result);
         }
-        return arguments;
+        return expressions;
     }
 
     private static Entity evalIdentifier(Node pNode, Environment env) {
@@ -210,8 +257,8 @@ public abstract class Interpreter {
     }
 
     private static Entity evalIntegerInfixExpression(String op, Entity left, Entity right) {
-        long leftVal = ((IntegerObj) left).value();
-        long rightVal = ((IntegerObj) right).value();
+        int leftVal = ((IntegerObj) left).value();
+        int rightVal = ((IntegerObj) right).value();
         switch (op) {
             case "+" -> {return new IntegerObj(leftVal + rightVal);}
             case "-" -> {return new IntegerObj(leftVal - rightVal);}
@@ -236,10 +283,10 @@ public abstract class Interpreter {
     private static Entity evalMinusPrefixExpression(Entity right) {
         if (right.Type() != EntityType.INT_OBJ)
             return newError("unknown operator: -%s", right.Type());
-        long val;
+        int val;
         if (right.Type() == EntityType.INT_OBJ) {
              val = ((IntegerObj) right).value();
-             return new IntegerObj(-1*val);
+             return new IntegerObj(-1 * val);
         }
         else return NULL;
     }

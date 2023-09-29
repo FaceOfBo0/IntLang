@@ -49,15 +49,15 @@ public class Karaoke {
         Lexer scanner = new Lexer(source);
         Parser par = new Parser(scanner);
         Program prg = par.parseProgram();
-//        Entity eval;
+        Entity eval;
         if (!par.getErrors().isEmpty())
             par.getErrors().forEach(System.out::println);
         else {
             /*Parser Debug Code*/
-            System.out.println(prg);
-//            eval = Interpreter.eval(prg, env);
-//            if (eval != NULL)
-//                System.out.println(eval.Inspect());
+//            System.out.println(prg);
+            eval = Interpreter.eval(prg, env);
+            if (eval != NULL)
+                System.out.println(eval.Inspect());
         }
     }
 }

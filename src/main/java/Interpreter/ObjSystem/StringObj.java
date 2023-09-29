@@ -8,6 +8,6 @@ public record StringObj(String value) implements Entity {
 
     @Override
     public String Inspect() {
-        return this.value;
+        return "'" + this.value + "'";
     }
 }

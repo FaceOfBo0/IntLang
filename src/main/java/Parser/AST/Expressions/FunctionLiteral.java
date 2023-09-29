@@ -11,9 +11,7 @@ public record FunctionLiteral(Token tok, List<Identifier> parameters, BlockState
     public static Integer nestLevel = 0;
 
     @Override
-    public void expressionNode() {
-
-    }
+    public void expressionNode() { }
 
     @Override
     public String tokenLiteral() {

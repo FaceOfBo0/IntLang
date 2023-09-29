@@ -1,14 +1,17 @@
 package Interpreter.ObjSystem;
 
-public record ArrayObj() implements Entity {
+import java.util.List;
+
+public record ArrayObj(List<Entity> value) implements Entity {
 
     @Override
     public EntityType Type() {
-        return null;
+        return EntityType.ARRAY_OBJ;
     }
 
     @Override
     public String Inspect() {
-        return null;
+        var elems = this.value.stream().map(Entity::Inspect).toList();
+        return "[" + String.join(", ", elems) + "]";
     }
 }

@@ -3,7 +3,7 @@ package Parser.AST.Expressions;
 import Parser.AST.Expression;
 import Token.*;
 
-public record IntegerLiteral(Token tok, long value) implements Expression {
+public record IntegerLiteral(Token tok, int value) implements Expression {
 
 
     @Override

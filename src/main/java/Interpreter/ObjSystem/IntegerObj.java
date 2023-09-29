@@ -1,6 +1,6 @@
 package Interpreter.ObjSystem;
 
-public record IntegerObj(long value) implements Entity {
+public record IntegerObj(int value) implements Entity {
 
     @Override
     public EntityType Type() {
