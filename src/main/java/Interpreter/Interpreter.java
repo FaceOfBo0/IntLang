@@ -5,7 +5,6 @@ import Parser.AST.Expressions.*;
 import Parser.AST.Statements.*;
 import Parser.AST.*;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public abstract class Interpreter {
@@ -151,7 +150,7 @@ public abstract class Interpreter {
                     return ((ArrayObj) args[0]).value().get(0);
                 else return newError("wrong type of argument for 'head'; expected: ARRAY, got: %s", args[0].Type());
             }
-            return newError("wrong number of arguments; got: %d, want: 1",args.length);
+            return newError("wrong number of arguments - want: 1, got: %d",args.length);
         };
         builtins.put("head", new BuiltIn(headBuiltInFn));
 
@@ -168,7 +167,7 @@ public abstract class Interpreter {
                 }
                 else return newError("wrong type of argument for 'tail'; expected: ARRAY, got: %s", args[0].Type());
             }
-            return newError("wrong number of arguments; got: %d, want: 1",args.length);
+            return newError("wrong number of arguments - want: 1, got: %d",args.length);
         };
         builtins.put("tail", new BuiltIn(tailBuiltInFn));
 
@@ -176,14 +175,31 @@ public abstract class Interpreter {
         BuiltInFunction lastBuiltInFn = (Entity... args) -> {
             if (args.length == 1) {
                 if (args[0].Type() == EntityType.ARRAY_OBJ) {
-                    var indexLast = ((ArrayObj) args[0]).value().size()-1;
+                    var indexLast = ((ArrayObj) args[0]).value().size() - 1;
                     return ((ArrayObj) args[0]).value().get(indexLast);
                 }
                 else return newError("wrong type of argument for 'last'; expected: ARRAY, got: %s", args[0].Type());
             }
-            return newError("wrong number of arguments; got: %d, want: 1",args.length);
+            return newError("wrong number of arguments - want: 1, got: %d",args.length);
         };
         builtins.put("last", new BuiltIn(lastBuiltInFn));
+
+        // push() for Arrays
+        BuiltInFunction pushBuiltInFn = (Entity... args) -> {
+            if (args.length == 2) {
+                if (args[0].Type() == EntityType.ARRAY_OBJ) {
+                    if (!((ArrayObj) args[0]).value().isEmpty()) {
+                        var maxIndex = ((ArrayObj) args[0]).value().size();
+                        ((ArrayObj) args[0]).value().add(maxIndex, args[1]);
+                        return args[0];
+                    }
+                    return NULL;
+                }
+                else return newError("wrong type of argument for 'last'; expected: ARRAY, got: %s", args[0].Type());
+            }
+            return newError("wrong number of arguments - expected: 2, got: %d",args.length);
+        };
+        builtins.put("push", new BuiltIn(pushBuiltInFn));
     }
 
     private static Entity evalIndexExpression(Entity left, Entity index) {
