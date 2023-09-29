@@ -5,6 +5,7 @@ import Parser.AST.Expressions.*;
 import Parser.AST.Statements.*;
 import Parser.AST.*;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 public abstract class Interpreter {
@@ -129,20 +130,60 @@ public abstract class Interpreter {
     }
 
     private static void initBuiltIns() {
+
         // len() for Strings and Arrays
         BuiltInFunction lenBuiltInFn = (Entity... args) -> {
             if (args.length == 1) {
                 if (args[0].Type() == EntityType.STRING_OBJ)
-                    return new IntegerObj(args[0].Inspect().length());
+                    return new IntegerObj(((StringObj) args[0]).value().length());
                 else if (args[0].Type() == EntityType.ARRAY_OBJ)
-                    return new IntegerObj(((ArrayObj)args[0]).value().size());
+                    return new IntegerObj(((ArrayObj) args[0]).value().size());
                 else return newError("wrong type of argument for 'len'; expected: STRING, got: %s", args[0].Type());
             }
             return newError("wrong number of arguments; got: %d, want: 1",args.length);
         };
         builtins.put("len", new BuiltIn(lenBuiltInFn));
-        // first() for Arrays
 
+        // head() for Arrays
+        BuiltInFunction headBuiltInFn = (Entity... args) -> {
+            if (args.length == 1) {
+                if (args[0].Type() == EntityType.ARRAY_OBJ)
+                    return ((ArrayObj) args[0]).value().get(0);
+                else return newError("wrong type of argument for 'head'; expected: ARRAY, got: %s", args[0].Type());
+            }
+            return newError("wrong number of arguments; got: %d, want: 1",args.length);
+        };
+        builtins.put("head", new BuiltIn(headBuiltInFn));
+
+        // tail() for Arrays
+        BuiltInFunction tailBuiltInFn = (Entity... args) -> {
+            if (args.length == 1) {
+                if (args[0].Type() == EntityType.ARRAY_OBJ) {
+                    List<Entity> shorterArr = new ArrayList<>(((ArrayObj) args[0]).value());
+                    if (!shorterArr.isEmpty()) {
+                        shorterArr.remove(0);
+                        return new ArrayObj(shorterArr);
+                    }
+                    return NULL;
+                }
+                else return newError("wrong type of argument for 'tail'; expected: ARRAY, got: %s", args[0].Type());
+            }
+            return newError("wrong number of arguments; got: %d, want: 1",args.length);
+        };
+        builtins.put("tail", new BuiltIn(tailBuiltInFn));
+
+        // last() for Arrays
+        BuiltInFunction lastBuiltInFn = (Entity... args) -> {
+            if (args.length == 1) {
+                if (args[0].Type() == EntityType.ARRAY_OBJ) {
+                    var indexLast = ((ArrayObj) args[0]).value().size()-1;
+                    return ((ArrayObj) args[0]).value().get(indexLast);
+                }
+                else return newError("wrong type of argument for 'last'; expected: ARRAY, got: %s", args[0].Type());
+            }
+            return newError("wrong number of arguments; got: %d, want: 1",args.length);
+        };
+        builtins.put("last", new BuiltIn(lastBuiltInFn));
     }
 
     private static Entity evalIndexExpression(Entity left, Entity index) {

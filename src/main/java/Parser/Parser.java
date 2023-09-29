@@ -53,7 +53,7 @@ public class Parser {
     private void initParseFns(){
         // --- [Identifiers & Integer Literals] ---
         this.setPrefix(TokenType.IDENT, () -> new Identifier(this.curToken, this.curToken.literal()));
-        this.setPrefix(TokenType.INT, () -> new IntegerLiteral(this.curToken, Long.parseLong(this.curToken.literal())));
+        this.setPrefix(TokenType.INT, () -> new IntegerLiteral(this.curToken, Integer.parseInt(this.curToken.literal())));
 
         // --- [String Literals] ---
         this.setPrefix(TokenType.STRING, () -> new StringLiteral(this.curToken, this.curToken.literal()));

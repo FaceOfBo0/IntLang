@@ -56,8 +56,7 @@ public class Karaoke {
             /*Parser Debug Code*/
 //            System.out.println(prg);
             eval = Interpreter.eval(prg, env);
-            if (eval != NULL)
-                System.out.println(eval.Inspect());
+            System.out.println(eval.Inspect());
         }
     }
 }
