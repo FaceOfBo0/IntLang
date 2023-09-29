@@ -32,6 +32,6 @@ public record StringLiteral(Token tok, String value) implements Expression {
 
     @Override
     public String toString() {
-        return this.tok.literal();
+        return "'" + this.tok.literal() + "'";
     }
 }

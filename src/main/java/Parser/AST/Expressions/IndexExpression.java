@@ -32,6 +32,6 @@ public record IndexExpression(Token tok, Expression left, Expression index) impl
 
     @Override
     public String toString() {
-        return this.left+"[" + this.index + "]";
+        return this.left + "[" + this.index + "]";
     }
 }

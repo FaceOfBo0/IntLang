@@ -14,7 +14,8 @@ enum Precedence {
     SUM,
     PRODUCT,
     PREFIX,
-    CALL
+    CALL,
+    INDEX
 }
 
 interface PrefixParseFn {
@@ -43,6 +44,7 @@ public class Parser {
     public Parser(Lexer pLex) {
         this.lex = pLex;
         this.precedences.put(TokenType.LPAREN, Precedence.CALL);
+        this.precedences.put(TokenType.LBRACKET, Precedence.INDEX);
         this.nextToken();
         this.nextToken();
         this.initParseFns();
@@ -83,6 +85,14 @@ public class Parser {
             this.nextToken();
             List<Expression> params = this.parseExpressionList(TokenType.RPAREN);
             return new CallExpression(callTok, function, params);
+        });
+
+        /// --- [Index Expressions] ---
+        this.setInfix(TokenType.LBRACKET, (Expression left) -> {
+            Token indexTok = this.curToken;
+            this.nextToken();
+            Expression index = this.parseIndexExpression();
+            return new IndexExpression(indexTok, left, index);
         });
 
         // --- [If Expressions] ---
@@ -148,6 +158,18 @@ public class Parser {
         this.setInfix(TokenType.SLASH, parseInfixExpr);
         this.setInfix(TokenType.EQ, parseInfixExpr);
         this.setInfix(TokenType.BANG_EQ, parseInfixExpr);
+    }
+
+    private Expression parseIndexExpression() {
+        Expression index;
+        if (this.curTokenIs(TokenType.RBRACKET)) {
+            this.errors.add("PARSE ERROR on ARRAY: IndexPosition is empty!");
+            return null;
+        }
+        index = this.parseExpression(Precedence.LOWEST);
+        if (this.expectedPeekNot(TokenType.RBRACKET))
+            return null;
+        return index;
     }
 
     private List<Expression> parseExpressionList(TokenType delimiter) {
