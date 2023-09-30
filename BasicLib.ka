@@ -1,0 +1,23 @@
+let fib = fn(n) {
+    let calcFib = fn(x, y, n) {
+        if (n-1 == 0) {
+            return y;
+        }
+        calcFib(y, x+y, n-1);
+    }
+    return calcFib(0, 1, n);
+}
+
+let map = fn(list, fun) {
+    let iter = fn(list, acc) {
+        if (len(list) == 0) {
+            return acc
+        }
+        iter(tail(list), push(acc, fun(head(list))))
+    }
+    iter(list, [])
+}
+
+let sq = fn(x) { return x*x; }
+
+map([2,6,5,7,6])

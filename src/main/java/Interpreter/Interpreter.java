@@ -201,7 +201,7 @@ public abstract class Interpreter {
                     ((ArrayObj) args[0]).value().add(maxIndex, args[1]);
                     return args[0];
                 }
-                else return newError("wrong type of argument for 'last'; expected: ARRAY, got: %s", args[0].Type());
+                else return newError("wrong type of argument for 'push'; expected: ARRAY, got: %s", args[0].Type());
             }
             return newError("wrong number of arguments - expected: 2, got: %d",args.length);
         };
@@ -241,6 +241,7 @@ public abstract class Interpreter {
         EnclosedEnvironment newEnv = new EnclosedEnvironment(((FunctionObj) func).env());
         int i = 0;
         for (Identifier name: ((FunctionObj) func).parameters()) {
+            // TODO: OutOfBounds error handling for arguments mismatch!
             newEnv.set(name.value(), args.get(i));
             i++;
         }
@@ -328,7 +329,9 @@ public abstract class Interpreter {
             case "*" -> {return new IntegerObj(leftVal * rightVal);}
             case "/" -> {return new IntegerObj(leftVal / rightVal);}
             case "<" -> {return getBoolObject(leftVal < rightVal);}
+            case "<=" -> {return getBoolObject(leftVal <= rightVal);}
             case ">" -> {return getBoolObject(leftVal > rightVal);}
+            case ">=" -> {return getBoolObject(leftVal >= rightVal);}
             case "!=" -> {return getBoolObject(leftVal != rightVal);}
             case "==" -> {return getBoolObject(leftVal == rightVal);}
             default -> { return newError("unknown operator: %s %s %s", left.Type(), op, right.Type()); }

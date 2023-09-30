@@ -14,6 +14,7 @@ import static Interpreter.Interpreter.NULL;
 
 public class Karaoke {
     public static void main(String[] args) throws IOException {
+        Interpreter.init();
         if (args.length > 1) {
             System.out.println("Usage: karaoke [script]");
             System.exit(64);
@@ -28,13 +29,27 @@ public class Karaoke {
         Environment env = new Environment();
         byte[] bytes = Files.readAllBytes(Paths.get(path));
         run(new String(bytes, Charset.defaultCharset()), env);
+        runPrompt(env);
+    }
+
+    private static void runPrompt(Environment env) throws IOException {
+        InputStreamReader input = new InputStreamReader(System.in);
+        BufferedReader reader = new BufferedReader(input);
+        for (;;) {
+            System.out.print(">> ");
+            String line = reader.readLine();
+            if (Objects.equals(line, "")) break;
+            run(line, env);
+            /* Lexer Debug Code */
+//            Lexer scan = new Lexer(line);
+//            System.out.println(scan.tokenize());
+        }
     }
 
     private static void runPrompt() throws IOException {
         InputStreamReader input = new InputStreamReader(System.in);
         BufferedReader reader = new BufferedReader(input);
         Environment env = new Environment();
-        Interpreter.init();
         for (;;) {
             System.out.print(">> ");
             String line = reader.readLine();
