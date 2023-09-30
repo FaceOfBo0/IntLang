@@ -5,7 +5,7 @@ import Parser.AST.Statements.BlockStatement;
 
 import java.util.List;
 
-public record Function(List<Identifier> parameters, BlockStatement body, Environment env) implements Entity {
+public record FunctionObj(List<Identifier> parameters, BlockStatement body, Environment env) implements Entity {
 
     @Override
     public EntityType Type() {

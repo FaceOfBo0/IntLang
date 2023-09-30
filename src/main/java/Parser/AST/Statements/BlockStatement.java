@@ -7,7 +7,7 @@ import Token.*;
 
 import java.util.List;
 
-public record BlockStatement (Token tok, List<Statement> statements) implements Statement {
+public record BlockStatement(Token tok, List<Statement> statements) implements Statement {
 
     @Override
     public String tokenLiteral() {

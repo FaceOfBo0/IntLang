@@ -1,6 +1,6 @@
 package Interpreter.ObjSystem;
 
-public class Null implements Entity {
+public class NullObj implements Entity {
     @Override
     public EntityType Type() {
         return EntityType.NULL_OBJ;

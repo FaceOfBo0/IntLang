@@ -9,13 +9,16 @@ import java.util.*;
 
 public abstract class Interpreter {
 
-    public static Null NULL = new Null();
-    static Bool TRUE = new Bool(true);
-    static Bool FALSE = new Bool(false);
+    public static NullObj NULL = new NullObj();
+    static BooleanObj TRUE = new BooleanObj(true);
+    static BooleanObj FALSE = new BooleanObj(false);
     static Map<String, Entity> builtins = new HashMap<>(0);
 
-    public static Entity eval(Node pNode, Environment env) {
+    public static void init() {
         initBuiltIns();
+    }
+
+    public static Entity eval(Node pNode, Environment env) {
 
         // Whole program
         if (pNode.getClass() == Program.class)
@@ -112,7 +115,7 @@ public abstract class Interpreter {
         else if (pNode.getClass() == FunctionLiteral.class){
             List<Identifier> params = ((FunctionLiteral) pNode).parameters();
             BlockStatement body = ((FunctionLiteral) pNode).body();
-            return new Function(params, body, env);
+            return new FunctionObj(params, body, env);
         }
         // Call Expressions
         else if (pNode.getClass() == CallExpression.class) {
@@ -146,8 +149,11 @@ public abstract class Interpreter {
         // head() for Arrays
         BuiltInFunction headBuiltInFn = (Entity... args) -> {
             if (args.length == 1) {
-                if (args[0].Type() == EntityType.ARRAY_OBJ)
-                    return ((ArrayObj) args[0]).value().get(0);
+                if (args[0].Type() == EntityType.ARRAY_OBJ) {
+                    if (!((ArrayObj) args[0]).value().isEmpty())
+                        return ((ArrayObj) args[0]).value().get(0);
+                    return new ArrayObj();
+                }
                 else return newError("wrong type of argument for 'head'; expected: ARRAY, got: %s", args[0].Type());
             }
             return newError("wrong number of arguments - want: 1, got: %d",args.length);
@@ -158,12 +164,12 @@ public abstract class Interpreter {
         BuiltInFunction tailBuiltInFn = (Entity... args) -> {
             if (args.length == 1) {
                 if (args[0].Type() == EntityType.ARRAY_OBJ) {
-                    List<Entity> shorterArr = new ArrayList<>(((ArrayObj) args[0]).value());
-                    if (!shorterArr.isEmpty()) {
+                    if (!((ArrayObj) args[0]).value().isEmpty()) {
+                        List<Entity> shorterArr = new ArrayList<>(((ArrayObj) args[0]).value());
                         shorterArr.remove(0);
                         return new ArrayObj(shorterArr);
                     }
-                    return NULL;
+                    return new ArrayObj();
                 }
                 else return newError("wrong type of argument for 'tail'; expected: ARRAY, got: %s", args[0].Type());
             }
@@ -175,8 +181,11 @@ public abstract class Interpreter {
         BuiltInFunction lastBuiltInFn = (Entity... args) -> {
             if (args.length == 1) {
                 if (args[0].Type() == EntityType.ARRAY_OBJ) {
-                    var indexLast = ((ArrayObj) args[0]).value().size() - 1;
-                    return ((ArrayObj) args[0]).value().get(indexLast);
+                    if (!((ArrayObj) args[0]).value().isEmpty()) {
+                        var indexLast = ((ArrayObj) args[0]).value().size() - 1;
+                        return ((ArrayObj) args[0]).value().get(indexLast);
+                    }
+                    return new ArrayObj();
                 }
                 else return newError("wrong type of argument for 'last'; expected: ARRAY, got: %s", args[0].Type());
             }
@@ -188,12 +197,9 @@ public abstract class Interpreter {
         BuiltInFunction pushBuiltInFn = (Entity... args) -> {
             if (args.length == 2) {
                 if (args[0].Type() == EntityType.ARRAY_OBJ) {
-                    if (!((ArrayObj) args[0]).value().isEmpty()) {
-                        var maxIndex = ((ArrayObj) args[0]).value().size();
-                        ((ArrayObj) args[0]).value().add(maxIndex, args[1]);
-                        return args[0];
-                    }
-                    return NULL;
+                    var maxIndex = ((ArrayObj) args[0]).value().size();
+                    ((ArrayObj) args[0]).value().add(maxIndex, args[1]);
+                    return args[0];
                 }
                 else return newError("wrong type of argument for 'last'; expected: ARRAY, got: %s", args[0].Type());
             }
@@ -215,9 +221,9 @@ public abstract class Interpreter {
     private static Entity evalFunction(Entity func, List<Entity> args) {
         if (func.getClass() == BuiltIn.class)
             return ((BuiltIn) func).fn().parse(args.toArray(new Entity[0]));
-        else if (func.getClass() == Function.class) {
+        else if (func.getClass() == FunctionObj.class) {
             Environment extendedEnv = extendedFunctionEnv(func, args);
-            Entity evalBody = eval(((Function) func).body(), extendedEnv);
+            Entity evalBody = eval(((FunctionObj) func).body(), extendedEnv);
             assert evalBody != null;
             return unwrapReturnVal(evalBody);
         }
@@ -231,10 +237,10 @@ public abstract class Interpreter {
     }
 
     private static Environment extendedFunctionEnv(Entity func, List<Entity> args) {
-        assert func.getClass() == Function.class;
-        EnclosedEnvironment newEnv = new EnclosedEnvironment(((Function) func).env());
+        assert func.getClass() == FunctionObj.class;
+        EnclosedEnvironment newEnv = new EnclosedEnvironment(((FunctionObj) func).env());
         int i = 0;
-        for (Identifier name: ((Function) func).parameters()) {
+        for (Identifier name: ((FunctionObj) func).parameters()) {
             newEnv.set(name.value(), args.get(i));
             i++;
         }
@@ -358,7 +364,7 @@ public abstract class Interpreter {
         else return FALSE;
     }
 
-    private static Bool getBoolObject(boolean pValue) {
+    private static BooleanObj getBoolObject(boolean pValue) {
         if (pValue)
             return TRUE;
         else return FALSE;

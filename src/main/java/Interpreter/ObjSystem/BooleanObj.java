@@ -1,6 +1,6 @@
 package Interpreter.ObjSystem;
 
-public record Bool(boolean value) implements Entity {
+public record BooleanObj(boolean value) implements Entity {
 
     @Override
     public EntityType Type() {

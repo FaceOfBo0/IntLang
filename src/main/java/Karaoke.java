@@ -34,6 +34,7 @@ public class Karaoke {
         InputStreamReader input = new InputStreamReader(System.in);
         BufferedReader reader = new BufferedReader(input);
         Environment env = new Environment();
+        Interpreter.init();
         for (;;) {
             System.out.print(">> ");
             String line = reader.readLine();
