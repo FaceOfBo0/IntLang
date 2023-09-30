@@ -20,4 +20,4 @@ let map = fn(list, fun) {
 
 let sq = fn(x) { return x*x; }
 
-map([2,6,5,7,6])
+map([2,6,5,7,6], sq)

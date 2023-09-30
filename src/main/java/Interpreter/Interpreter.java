@@ -314,10 +314,10 @@ public abstract class Interpreter {
     private static Entity evalStringInfixExpression(String op, Entity left, Entity right) {
         String leftVal = ((StringObj) left).value();
         String rightVal = ((StringObj) right).value();
-        switch (op) {
-            case "+" -> { return new StringObj(leftVal + rightVal); }
-            default -> { return newError("unknown operator: %s %s %s", left.Type(), op, right.Type()); }
+        if (op.equals("+")) {
+            return new StringObj(leftVal + rightVal);
         }
+        return newError("unknown operator: %s %s %s", left.Type(), op, right.Type());
     }
 
     private static Entity evalIntegerInfixExpression(String op, Entity left, Entity right) {

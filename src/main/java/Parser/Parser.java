@@ -153,7 +153,9 @@ public class Parser {
         this.setInfix(TokenType.MINUS, parseInfixExpr);
         this.setInfix(TokenType.PLUS, parseInfixExpr);
         this.setInfix(TokenType.LESS, parseInfixExpr);
+        this.setInfix(TokenType.LESS_EQ, parseInfixExpr);
         this.setInfix(TokenType.GREATER, parseInfixExpr);
+        this.setInfix(TokenType.GREATER_EQ, parseInfixExpr);
         this.setInfix(TokenType.ASTERISK, parseInfixExpr);
         this.setInfix(TokenType.SLASH, parseInfixExpr);
         this.setInfix(TokenType.EQ, parseInfixExpr);
@@ -281,12 +283,12 @@ public class Parser {
     }
 
     private Expression parseExpression(Precedence precedence) {
-        PrefixParseFn prefix = this.prefixParseMap.get(this.curToken.type());
-        if (prefix == null) {
+        PrefixParseFn prefixFn = this.prefixParseMap.get(this.curToken.type());
+        if (prefixFn == null) {
             this.noPrefixParseFnError(this.curToken.type());
             return null;
         }
-        Expression leftExp = prefix.parse();
+        Expression leftExp = prefixFn.parse();
 
         while(!this.peekTokenIs(TokenType.SEMICOL) && precedence.ordinal() < this.peekPrecedence().ordinal()) {
             InfixParseFn infix = this.infixParseMap.get(this.peekToken.type());
