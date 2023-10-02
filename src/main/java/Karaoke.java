@@ -38,7 +38,8 @@ public class Karaoke {
         for (;;) {
             System.out.print(">> ");
             String line = reader.readLine();
-            if (Objects.equals(line, "")) break;
+            if (Objects.equals(line, ""))
+                break;
             run(line, env);
             /* Lexer Debug Code */
 //            Lexer scan = new Lexer(line);
