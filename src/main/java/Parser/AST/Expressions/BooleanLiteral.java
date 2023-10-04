@@ -1,7 +1,7 @@
 package Parser.AST.Expressions;
 
+import Lexer.Token.Token;
 import Parser.AST.Expression;
-import Token.*;
 
 public record BooleanLiteral(Token tok, boolean value) implements Expression {
 

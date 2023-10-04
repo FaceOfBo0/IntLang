@@ -1,7 +1,7 @@
 package Parser.AST.Expressions;
 
+import Lexer.Token.Token;
 import Parser.AST.Expression;
-import Token.*;
 
 public record IndexExpression(Token tok, Expression left, Expression index) implements Expression {
 

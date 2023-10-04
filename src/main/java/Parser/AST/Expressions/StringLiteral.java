@@ -1,7 +1,7 @@
 package Parser.AST.Expressions;
 
 import Parser.AST.Expression;
-import Token.Token;
+import Lexer.Token.Token;
 
 public record StringLiteral(Token tok, String value) implements Expression {
 

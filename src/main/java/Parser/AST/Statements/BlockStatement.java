@@ -1,9 +1,9 @@
 package Parser.AST.Statements;
 
+import Lexer.Token.Token;
 import Parser.AST.Expressions.FunctionLiteral;
 import Parser.AST.Expressions.IfExpression;
 import Parser.AST.Statement;
-import Token.*;
 
 import java.util.List;
 

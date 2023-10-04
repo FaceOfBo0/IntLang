@@ -1,7 +1,8 @@
 package Parser.AST.Expressions;
 
+import Lexer.Token.Token;
 import Parser.AST.Expression;
-import Token.*;
+
 
 public record PrefixExpression(Token tok, String op, Expression right) implements Expression {
 

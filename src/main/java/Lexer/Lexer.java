@@ -1,6 +1,7 @@
 package Lexer;
 
-import Token.*;
+import Lexer.Token.Token;
+import Lexer.Token.TokenType;
 
 import java.util.*;
 
@@ -111,6 +112,7 @@ public class Lexer {
                 tok = new Token(TokenType.STRING, result.toString());
             }
             case ';' -> tok = new Token(TokenType.SEMICOL, String.valueOf(this.curChar));
+            case ':' -> tok = new Token(TokenType.COLON, String.valueOf(this.curChar));
             case ',' -> tok = new Token(TokenType.COMMA, String.valueOf(this.curChar));
             case '(' -> tok = new Token(TokenType.LPAREN, String.valueOf(this.curChar));
             case ')' -> tok = new Token(TokenType.RPAREN, String.valueOf(this.curChar));

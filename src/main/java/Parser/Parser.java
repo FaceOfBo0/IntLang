@@ -1,8 +1,9 @@
 package Parser;
+import Lexer.Token.Token;
+import Lexer.Token.TokenType;
 import Parser.AST.*;
 import Parser.AST.Statements.*;
 import Parser.AST.Expressions.*;
-import Token.*;
 import Lexer.*;
 
 import java.util.*;

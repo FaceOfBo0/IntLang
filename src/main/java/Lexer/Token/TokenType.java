@@ -1,4 +1,4 @@
-package Token;
+package Lexer.Token;
 
 public enum TokenType {
     // Literals & Identifiers
@@ -13,5 +13,5 @@ public enum TokenType {
     //Keywords
     LET, FUNC, IF, ELSE, RETURN, TRUE, FALSE,
     // Special
-    ILLEGAL, EOF
+    ILLEGAL, COLON, EOF
 }

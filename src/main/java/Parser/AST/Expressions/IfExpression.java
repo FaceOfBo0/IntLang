@@ -1,8 +1,8 @@
 package Parser.AST.Expressions;
 
+import Lexer.Token.Token;
 import Parser.AST.Expression;
 import Parser.AST.Statements.BlockStatement;
-import Token.*;
 
 public record IfExpression(Token tok, Expression condition, BlockStatement consequence, BlockStatement alternative) implements Expression {
     public static int nestLevel = 0;

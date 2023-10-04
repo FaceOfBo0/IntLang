@@ -1,7 +1,7 @@
 package Parser.AST.Expressions;
 
+import Lexer.Token.Token;
 import Parser.AST.*;
-import Token.*;
 
 public record InfixExpression(Token tok, Expression left, String op, Expression right) implements Expression {
 

@@ -1,7 +1,7 @@
 package Parser.AST.Expressions;
 
+import Lexer.Token.Token;
 import Parser.AST.Expression;
-import Token.*;
 import java.util.List;
 
 public record CallExpression(Token tok, Expression function, List<Expression> params) implements Expression {

@@ -1,8 +1,8 @@
 package Parser.AST.Expressions;
 
+import Lexer.Token.Token;
 import Parser.AST.Expression;
 import Parser.AST.Statements.BlockStatement;
-import Token.*;
 
 import java.util.List;
 

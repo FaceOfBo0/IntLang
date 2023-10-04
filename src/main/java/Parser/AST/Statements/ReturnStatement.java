@@ -1,8 +1,8 @@
 package Parser.AST.Statements;
 
+import Lexer.Token.Token;
 import Parser.AST.Expression;
 import Parser.AST.Statement;
-import Token.*;
 
 public record ReturnStatement(Token tok, Expression value) implements Statement {
 
