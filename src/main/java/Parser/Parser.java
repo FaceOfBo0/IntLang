@@ -67,14 +67,16 @@ public class Parser {
         this.setPrefix(TokenType.LBRACKET, () -> {
             Token arrayTok = this.curToken;
             this.nextToken();
-            List<Expression> arrayItems = this.parseExpressions(TokenType.RBRACKET);
+            List<Expression> arrayItems = this.parseExpressionsList(TokenType.RBRACKET);
             return new ArrayLiteral(arrayTok, arrayItems);
         });
 
         // --- [Map Literals] ---
         this.setPrefix(TokenType.LBRACE, () -> {
+            Token mapTok = this.curToken;
+            this.nextToken();
             Map<Expression, Expression> keyValues = this.parseMapElements();
-            return new MapLiteral(this.curToken, keyValues);
+            return new MapLiteral(mapTok, keyValues);
         });
 
         // --- [Grouped Expressions] ---
@@ -90,7 +92,7 @@ public class Parser {
         this.setInfix(TokenType.LPAREN, (Expression function) -> {
             Token callTok = this.curToken;
             this.nextToken();
-            List<Expression> params = this.parseExpressions(TokenType.RPAREN);
+            List<Expression> params = this.parseExpressionsList(TokenType.RPAREN);
             return new CallExpression(callTok, function, params);
         });
 
@@ -171,23 +173,36 @@ public class Parser {
 
     private Map<Expression, Expression> parseMapElements() {
         Map<Expression, Expression> keyValues = new HashMap<>(0);
-
+        if (this.curTokenIs(TokenType.RBRACE))
+            return keyValues;
+        List<Expression> pair = this.parseKeyValuePair();
+        if (pair == null)
+            return null;
+        keyValues.put(pair.get(0), pair.get(1));
+        while(this.peekTokenIs(TokenType.COMMA)) {
+            this.nextToken();
+            this.nextToken();
+            pair = this.parseKeyValuePair();
+            if (pair == null)
+                return null;
+            keyValues.put(pair.get(0), pair.get(1));
+        }
+        if (this.expectedPeekNot(TokenType.RBRACE))
+            return null;
         return keyValues;
     }
 
-    private Expression parseIndexExpression() {
-        Expression index;
-        if (this.curTokenIs(TokenType.RBRACKET)) {
-            this.errors.add("PARSE ERROR on ARRAY: IndexPosition is empty!");
+    private List<Expression> parseKeyValuePair() {
+        List<Expression> keyValueList = new ArrayList<>(0);
+        keyValueList.add(this.parseExpression(Precedence.LOWEST));
+        if (this.expectedPeekNot(TokenType.COLON))
             return null;
-        }
-        index = this.parseExpression(Precedence.LOWEST);
-        if (this.expectedPeekNot(TokenType.RBRACKET))
-            return null;
-        return index;
+        this.nextToken();
+        keyValueList.add(this.parseExpression(Precedence.LOWEST));
+        return keyValueList;
     }
 
-    private List<Expression> parseExpressions(TokenType endToken) {
+    private List<Expression> parseExpressionsList(TokenType endToken) {
         List<Expression> expressions = new ArrayList<>(0);
         if (this.curTokenIs(endToken))
             return expressions;
@@ -200,6 +215,18 @@ public class Parser {
         if (this.expectedPeekNot(endToken))
             return null;
         return expressions;
+    }
+
+    private Expression parseIndexExpression() {
+        Expression index;
+        if (this.curTokenIs(TokenType.RBRACKET)) {
+            this.errors.add("PARSE ERROR on ARRAY: IndexPosition is empty!");
+            return null;
+        }
+        index = this.parseExpression(Precedence.LOWEST);
+        if (this.expectedPeekNot(TokenType.RBRACKET))
+            return null;
+        return index;
     }
 
     private List<Identifier> parseFunctionParameters() {

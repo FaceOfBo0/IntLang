@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public record MapLiteral(Token tok, Map<Expression, Expression> elements) implements Expression {
+public record MapLiteral(Token tok, Map<Expression, Expression> pairs) implements Expression {
 
     @Override
     public void expressionNode() { }
@@ -34,8 +34,9 @@ public record MapLiteral(Token tok, Map<Expression, Expression> elements) implem
 
     @Override
     public String toString() {
-        List<String> pairs = new ArrayList<>();
-        this.elements.forEach((key, value) -> pairs.add(key.toString() + ":" + value.toString()));
-        return "{"+ String.join(", ", pairs) + "}";
+        List<String> pairsString = new ArrayList<>();
+        this.pairs.forEach((key, value) -> pairsString.add(key.toString() + ":" + value.toString()));
+        return "{"+ String.join(", ", pairsString) + "}";
     }
 }
+
