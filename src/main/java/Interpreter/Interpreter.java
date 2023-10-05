@@ -60,6 +60,11 @@ public abstract class Interpreter {
             return new ArrayObj(elements);
         }
 
+        // Map Literals
+        else if (pNode.getClass() == MapLiteral.class) {
+            Map<Entity, Entity> elements = evalPairs();
+        }
+
         // Index Expressions
         else if (pNode.getClass() == IndexExpression.class) {
             Entity left = eval(((IndexExpression) pNode).left(), env);
@@ -129,6 +134,12 @@ public abstract class Interpreter {
         }
         // default
         return NULL;
+    }
+
+    private static Map<Entity, Entity> evalPairs() {
+        Map<Entity, Entity> pairs = new HashMap<>(0);
+
+        return pairs;
     }
 
     private static void initBuiltIns() {
@@ -224,7 +235,6 @@ public abstract class Interpreter {
         else if (func.getClass() == FunctionObj.class) {
             Environment extendedEnv = extendedFunctionEnv(func, args);
             Entity evalBody = eval(((FunctionObj) func).body(), extendedEnv);
-            assert evalBody != null;
             return unwrapReturnVal(evalBody);
         }
         else return newError("not a function: %s", func.Type());
@@ -324,16 +334,16 @@ public abstract class Interpreter {
         int leftVal = ((IntegerObj) left).value();
         int rightVal = ((IntegerObj) right).value();
         switch (op) {
-            case "+" -> {return new IntegerObj(leftVal + rightVal);}
-            case "-" -> {return new IntegerObj(leftVal - rightVal);}
-            case "*" -> {return new IntegerObj(leftVal * rightVal);}
-            case "/" -> {return new IntegerObj(leftVal / rightVal);}
-            case "<" -> {return getBoolObject(leftVal < rightVal);}
-            case "<=" -> {return getBoolObject(leftVal <= rightVal);}
-            case ">" -> {return getBoolObject(leftVal > rightVal);}
-            case ">=" -> {return getBoolObject(leftVal >= rightVal);}
-            case "!=" -> {return getBoolObject(leftVal != rightVal);}
-            case "==" -> {return getBoolObject(leftVal == rightVal);}
+            case "+" -> { return new IntegerObj(leftVal + rightVal); }
+            case "-" -> { return new IntegerObj(leftVal - rightVal); }
+            case "*" -> { return new IntegerObj(leftVal * rightVal); }
+            case "/" -> { return new IntegerObj(leftVal / rightVal); }
+            case "<" -> { return getBoolObject(leftVal < rightVal); }
+            case "<=" -> { return getBoolObject(leftVal <= rightVal); }
+            case ">" -> { return getBoolObject(leftVal > rightVal); }
+            case ">=" -> { return getBoolObject(leftVal >= rightVal); }
+            case "!=" -> { return getBoolObject(leftVal != rightVal); }
+            case "==" -> { return getBoolObject(leftVal == rightVal); }
             default -> { return newError("unknown operator: %s %s %s", left.Type(), op, right.Type()); }
         }
     }

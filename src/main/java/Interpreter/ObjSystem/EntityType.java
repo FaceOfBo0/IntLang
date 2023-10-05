@@ -9,7 +9,8 @@ public enum EntityType {
     FUNCTION_OBJ,
     STRING_OBJ,
     BUILTIN_OBJ,
-    ARRAY_OBJ;
+    ARRAY_OBJ,
+    MAP_OBJ;
 
     @Override
     public String toString() {
@@ -23,6 +24,7 @@ public enum EntityType {
             case STRING_OBJ -> {return "STRING"; }
             case BUILTIN_OBJ -> {return "BUILTIN"; }
             case ARRAY_OBJ -> {return "ARRAY"; }
+            case MAP_OBJ -> {return "MAP"; }
         }
         return "";
     }
