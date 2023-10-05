@@ -67,8 +67,14 @@ public class Parser {
         this.setPrefix(TokenType.LBRACKET, () -> {
             Token arrayTok = this.curToken;
             this.nextToken();
-            List<Expression> arrayItems = this.parseExpressionList(TokenType.RBRACKET);
+            List<Expression> arrayItems = this.parseExpressions(TokenType.RBRACKET);
             return new ArrayLiteral(arrayTok, arrayItems);
+        });
+
+        // --- [Map Literals] ---
+        this.setPrefix(TokenType.LBRACE, () -> {
+            Map<Expression, Expression> keyValues = this.parseMapElements();
+            return new MapLiteral(this.curToken, keyValues);
         });
 
         // --- [Grouped Expressions] ---
@@ -84,7 +90,7 @@ public class Parser {
         this.setInfix(TokenType.LPAREN, (Expression function) -> {
             Token callTok = this.curToken;
             this.nextToken();
-            List<Expression> params = this.parseExpressionList(TokenType.RPAREN);
+            List<Expression> params = this.parseExpressions(TokenType.RPAREN);
             return new CallExpression(callTok, function, params);
         });
 
@@ -163,6 +169,12 @@ public class Parser {
         this.setInfix(TokenType.BANG_EQ, parseInfixExpr);
     }
 
+    private Map<Expression, Expression> parseMapElements() {
+        Map<Expression, Expression> keyValues = new HashMap<>(0);
+
+        return keyValues;
+    }
+
     private Expression parseIndexExpression() {
         Expression index;
         if (this.curTokenIs(TokenType.RBRACKET)) {
@@ -175,19 +187,19 @@ public class Parser {
         return index;
     }
 
-    private List<Expression> parseExpressionList(TokenType delimiter) {
-        List<Expression> exprs = new ArrayList<>(0);
-        if (this.curTokenIs(delimiter))
-            return exprs;
-        exprs.add(this.parseExpression(Precedence.LOWEST));
+    private List<Expression> parseExpressions(TokenType endToken) {
+        List<Expression> expressions = new ArrayList<>(0);
+        if (this.curTokenIs(endToken))
+            return expressions;
+        expressions.add(this.parseExpression(Precedence.LOWEST));
         while (this.peekTokenIs(TokenType.COMMA)) {
             this.nextToken();
             this.nextToken();
-            exprs.add(this.parseExpression(Precedence.LOWEST));
+            expressions.add(this.parseExpression(Precedence.LOWEST));
         }
-        if (this.expectedPeekNot(delimiter))
+        if (this.expectedPeekNot(endToken))
             return null;
-        return exprs;
+        return expressions;
     }
 
     private List<Identifier> parseFunctionParameters() {

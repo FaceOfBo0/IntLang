@@ -1,14 +1,16 @@
 package Parser.AST.Expressions;
 
-import Parser.AST.Expression;
 import Lexer.Token.Token;
+import Parser.AST.Expression;
 
-public record StringLiteral(Token tok, String value) implements Expression {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public record MapLiteral(Token tok, Map<Expression, Expression> elements) implements Expression {
 
     @Override
-    public void expressionNode() {
-
-    }
+    public void expressionNode() { }
 
     @Override
     public String tokenLiteral() {
@@ -32,6 +34,8 @@ public record StringLiteral(Token tok, String value) implements Expression {
 
     @Override
     public String toString() {
-        return this.tok.literal();
+        List<String> pairs = new ArrayList<>();
+        this.elements.forEach((key, value) -> pairs.add(key.toString() + ":" + value.toString()));
+        return "{"+ String.join(", ", pairs) + "}";
     }
 }
