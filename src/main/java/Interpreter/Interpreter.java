@@ -54,7 +54,7 @@ public abstract class Interpreter {
 
         // Array Literals
         else if (pNode.getClass() == ArrayLiteral.class) {
-            List<Entity> elements = evalExpressions(((ArrayLiteral) pNode).elements(), env);
+            List<Entity> elements = evalExpressionsList(((ArrayLiteral) pNode).elements(), env);
             if (elements.size() == 1 && isError(elements.get(0)))
                 return elements.get(0);
             return new ArrayObj(elements);
@@ -62,7 +62,10 @@ public abstract class Interpreter {
 
         // Map Literals
         else if (pNode.getClass() == MapLiteral.class) {
-            Map<Entity, Entity> elements = evalPairs();
+            Map<Entity, Entity> elements = evalMapPairs(((MapLiteral) pNode).pairs(), env);
+            if (elements.size() == 1 && isError(elements.get(NULL)))
+                return elements.get(NULL);
+            return new MapObj(elements);
         }
 
         // Index Expressions
@@ -70,12 +73,12 @@ public abstract class Interpreter {
             Entity left = eval(((IndexExpression) pNode).left(), env);
             if (isError(left))
                 return left;
-            if (left.Type() != EntityType.ARRAY_OBJ)
-                return newError("[] can't be used on that type - expected: ARRAY, got: %s", left.Type());
+            if (left.Type() != EntityType.ARRAY_OBJ && left.Type() != EntityType.MAP_OBJ)
+                return newError("[] can't be used on that type - expected: ARRAY or MAP, got: %s", left.Type());
             Entity index = eval(((IndexExpression) pNode).index(), env);
             if (isError(index))
                 return index;
-            if(index.Type() != EntityType.INT_OBJ)
+            if(index.Type() != EntityType.INT_OBJ && left.Type() == EntityType.ARRAY_OBJ)
                 return newError("Type mismatch on index value - expected: INT, got %s", index.Type());
             return evalIndexExpression(left, index);
         }
@@ -127,19 +130,13 @@ public abstract class Interpreter {
             Entity func = eval(((CallExpression) pNode).function(), env);
             if (isError(func))
                 return func;
-            List<Entity> args = evalExpressions(((CallExpression) pNode).params(), env);
+            List<Entity> args = evalExpressionsList(((CallExpression) pNode).params(), env);
             if (args.size() == 1 && isError(args.get(0)))
                 return args.get(0);
             return evalFunction(func, args);
         }
         // default
         return NULL;
-    }
-
-    private static Map<Entity, Entity> evalPairs() {
-        Map<Entity, Entity> pairs = new HashMap<>(0);
-
-        return pairs;
     }
 
     private static void initBuiltIns() {
@@ -220,13 +217,19 @@ public abstract class Interpreter {
     }
 
     private static Entity evalIndexExpression(Entity left, Entity index) {
-        assert left.Type() == EntityType.ARRAY_OBJ;
-        assert index.Type() == EntityType.INT_OBJ;
-        var indexInt = ((IntegerObj) index).value();
-        var maxIndex = ((ArrayObj) left).value().size() - 1;
-        if (indexInt > maxIndex)
-            return newError("IndexOutOfBounds - max index: %s, got: %s",maxIndex, indexInt);
-        return ((ArrayObj) left).value().get(indexInt);
+        if (left.Type() == EntityType.ARRAY_OBJ) {
+            var indexInt = ((IntegerObj) index).value();
+            var maxIndex = ((ArrayObj) left).value().size() - 1;
+            if (indexInt > maxIndex)
+                return newError("IndexOutOfBounds - max index: %s, got: %s", maxIndex, indexInt);
+            return ((ArrayObj) left).value().get(indexInt);
+        }
+        else {
+            var value = ((MapObj) left).value().getOrDefault(index, NULL);
+            if (value == NULL)
+                return newError("Map - no value found for key: %s", index.Inspect());
+            return value;
+        }
     }
 
     private static Entity evalFunction(Entity func, List<Entity> args) {
@@ -258,7 +261,21 @@ public abstract class Interpreter {
         return newEnv;
     }
 
-    private static List<Entity> evalExpressions(List<Expression> params, Environment env) {
+    private static Map<Entity, Entity> evalMapPairs(Map<Expression, Expression> pairs, Environment env) {
+        Map<Entity, Entity> elements = new HashMap<>(0);
+         for (Map.Entry<Expression, Expression> entry : pairs.entrySet()) {
+            Entity key = eval(entry.getKey(), env);
+            if (!(key.Type() == EntityType.STRING_OBJ || key.Type() == EntityType.BOOLEAN_OBJ || key.Type() == EntityType.INT_OBJ))
+                return new HashMap<>(Map.of(NULL, newError("Map: Key type mismatch - expected: STRING or BOOL or INT, got %s", key.Type())));
+            Entity value = eval(entry.getValue(), env);
+            if (!(value.Type() == EntityType.STRING_OBJ || value.Type() == EntityType.BOOLEAN_OBJ || value.Type() == EntityType.INT_OBJ))
+                return new HashMap<>(Map.of(NULL, newError("Map: Key type mismatch - expected: STRING or BOOL or INT, got %s", key.Type())));
+            elements.put(key, value);
+        }
+        return elements;
+    }
+
+    private static List<Entity> evalExpressionsList(List<Expression> params, Environment env) {
         List<Entity> expressions = new ArrayList<>(0);
         for (Expression arg: params) {
             Entity result = eval(arg, env);
