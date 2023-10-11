@@ -6,7 +6,7 @@ import Lexer.Token.TokenType;
 import java.util.*;
 
 public class Lexer {
-    private final Map<String, TokenType> keywords = new HashMap<>(Map.of("let", TokenType.LET, "fn", TokenType.FUNC, "true", TokenType.TRUE,
+    private final Map<String, TokenType> keywords = new HashMap<>(Map.of("var", TokenType.VAR, "fn", TokenType.FUNC, "true", TokenType.TRUE,
             "false", TokenType.FALSE, "return", TokenType.RETURN, "if", TokenType.IF, "else", TokenType.ELSE));
     public String source;
     public char curChar;

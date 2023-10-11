@@ -1,9 +1,9 @@
-let sq = fn(x) {
+var sq = fn(x) {
     return x*x;
 }
 
-let fib = fn(n) {
-    let iter = fn(x, y, n) {
+var fib = fn(n) {
+    var iter = fn(x, y, n) {
         if (n-1 == 0) {
             return y;
         }
@@ -12,8 +12,19 @@ let fib = fn(n) {
     return iter(0, 1, n);
 }
 
-let map = fn(list, fun) {
-    let iter = fn(list, acc) {
+var fib2 = fn() {
+    var x0 = 0
+    var x1 = 1
+    return fn() {
+        var f = x0
+        var x0 = x1
+        var x1 = f+x1
+        return f
+    }
+}
+
+var map = fn(list, fun) {
+    var iter = fn(list, acc) {
         if (len(list) == 0) {
             return acc;
         }
@@ -22,4 +33,4 @@ let map = fn(list, fun) {
     iter(list, []);
 }
 
-let filter = fn() {}
+var filter = fn() {}

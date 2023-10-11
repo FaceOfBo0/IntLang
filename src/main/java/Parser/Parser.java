@@ -270,7 +270,7 @@ public class Parser {
 
     private Statement parseStatement(){
         switch (this.curToken.type()){
-            case LET -> { return this.parseLetStatement(); }
+            case VAR -> { return this.parseLetStatement(); }
             case RETURN -> { return this.parseReturnStatement(); }
             default -> { return this.parseExpressionStatement(); }
         }

@@ -266,10 +266,10 @@ public abstract class Interpreter {
          for (Map.Entry<Expression, Expression> entry : pairs.entrySet()) {
             Entity key = eval(entry.getKey(), env);
             if (!(key.Type() == EntityType.STRING_OBJ || key.Type() == EntityType.BOOLEAN_OBJ || key.Type() == EntityType.INT_OBJ))
-                return new HashMap<>(Map.of(NULL, newError("Map: Key type mismatch - expected: STRING or BOOL or INT, got %s", key.Type())));
+                return new HashMap<>(Map.of(NULL, newError("Map: Key type mismatch - expected: STRING, BOOL or INT, got %s", key.Type())));
             Entity value = eval(entry.getValue(), env);
             if (!(value.Type() == EntityType.STRING_OBJ || value.Type() == EntityType.BOOLEAN_OBJ || value.Type() == EntityType.INT_OBJ))
-                return new HashMap<>(Map.of(NULL, newError("Map: Key type mismatch - expected: STRING or BOOL or INT, got %s", key.Type())));
+                return new HashMap<>(Map.of(NULL, newError("Map: Value type mismatch - expected: STRING, BOOL or INT, got %s", value.Type())));
             elements.put(key, value);
         }
         return elements;

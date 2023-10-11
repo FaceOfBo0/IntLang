@@ -11,7 +11,7 @@ public enum TokenType {
     LPAREN, RPAREN, LBRACE, LBRACKET,
     RBRACKET, RBRACE, COMMA, SEMICOL,
     //Keywords
-    LET, FUNC, IF, ELSE, RETURN, TRUE, FALSE,
+    VAR, FUNC, IF, ELSE, RETURN, TRUE, FALSE,
     // Special
     ILLEGAL, COLON, EOF
 }
